@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace WebServer::Config
+namespace WS::Config
 {
   /* @brief Server configuration structure that contains information of one server 
             (such as listen ip, port, resources directories and etc.)
@@ -14,4 +14,4 @@ namespace WebServer::Config
     std::string port;
 
   }; //!class ServerConfig
-} //!namespace WebServer::Config
+} //!namespace WS::Config

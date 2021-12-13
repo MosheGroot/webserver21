@@ -2,14 +2,14 @@
 
 #include <string>
 
-namespace WebServer::Http
+namespace WS::Http
 {
-  /* @brief Http Response class
+  /* @brief Http response class
   */
   class Response
   {
   public:
     std::string header;
     std::string data;
-  }; //!class WebServer
-} //!namespace WebServer::Core
+  }; //!class Response
+} //!namespace WS::Http

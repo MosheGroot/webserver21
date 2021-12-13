@@ -3,12 +3,12 @@
 #include "../models/request.hpp"
 #include "../models/response.hpp"
 
-namespace WebServer::Http
+namespace WS::Http
 {
   /* @brief Static class Parser, provides method for parsing
             HTTP methods from string
   */
-  static class Parser
+  class Parser
   {
   public:
 
@@ -26,4 +26,4 @@ namespace WebServer::Http
     static Response     deserializeResponse(const std::string& data);
 
   }; //!class Parser
-} //!namespace WebServer::Config
+} //!namespace WS::Http

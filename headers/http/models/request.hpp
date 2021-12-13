@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace WebServer::Http
+namespace WS::Http
 {
   /* @brief Http request class
   */
@@ -11,5 +11,5 @@ namespace WebServer::Http
   public:
     std::string header;
     std::string data;
-  }; //!class WebServer
-} //!namespace WebServer::Core
+  }; //!class Request
+} //!namespace WS::Http
