@@ -14,7 +14,9 @@ namespace WS::Utils
     Logger() {}
 
   public:
-    Logger(Logger &other) = delete;
+    Logger(Logger& other) = delete;
+
+    void operator=(const Logger& other) = delete;
 
     static Logger&     getInstance(void);
 

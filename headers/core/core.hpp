@@ -12,7 +12,9 @@ namespace WS::Core
     WebServer() {}
 
   public:
-    WebServer(WebServer &other) = delete;
+    WebServer(WebServer& other) = delete;
+    
+    void operator=(const WebServer& other) = delete;
 
     static WebServer&     getInstance(void);
 
