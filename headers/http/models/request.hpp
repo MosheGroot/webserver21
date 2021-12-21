@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <map>
 
 namespace WS::Http
 {
@@ -9,7 +10,11 @@ namespace WS::Http
   class Request
   {
   public:
-    std::string header;
-    std::string data;
+    const std::string version = "HTTP/1.1";
+
+    std::string                         uri;
+    std::map<std::string, std::string>  headers;
+    std::string                         data;
+  
   }; //!class Request
 } //!namespace WS::Http
