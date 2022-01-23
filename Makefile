@@ -4,50 +4,63 @@ CC			:= clang++
 CFLAGS		:= -Wall -Wextra -Werror -std=c++98
 DEP_FLAGS	:= -MP -MMD
 
-SRCS_DIR	:= sources
-HDRS_DIR	:= headers
-vpath %.cpp	$(SRCS_DIR)
-vpath %.hpp	$(HDRS_DIR)
-INCLUDES	:= -I$(HDRS_DIR)
+SRCS_DIRS	:= $(addprefix sources, \
+                    / \
+                    /utils \
+                )
+HDRS_DIRS	:= $(addprefix headers, \
+                    / \
+                    /utils \
+                )
+
+vpath %.cpp	$(SRCS_DIRS)
+vpath %.hpp	$(HDRS_DIRS)
 
 # why need HDRS?
+# HDRS		:= Example1.class.hpp \
+# 			example2.hpp
 
-HDRS		:= Example1.class.hpp \
-			example2.hpp
-
-SRCS		:= main.cpp \
-			Example1.class.cpp \
-			example.cpp
+SRCS        :=  main.cpp \
+                $(addprefix utils/,\
+                    logger.cpp \
+                )
+                # $(addprefix example_dir/,
+                #     example1.cpp,
+                #     example2.cpp
+                # )
 
 OBJS_DIR	:= .objects
-OBJS		:= $(SRCS:%.cpp=$(OBJS_DIR)/%.o)
+OBJS		:= $(addprefix $(OBJS_DIR)/, \
+				$(notdir $(patsubst %.cpp, %.o, $(SRCS))))
 
-DEPS		:= $(SRCS:%.cpp=$(OBJS_DIR)/%.d)
+DEPS		:= $(addprefix $(OBJS_DIR)/, \
+				$(notdir $(patsubst %.cpp, %.d, $(SRCS))))
+
 
 all:
-					@echo "$(BOLD)Creating/updating $(WHITE_B)'$(NAME)'$(BOLD):$(DEF)"
+					@echo -e "$(FMT_BOLD)Creating/updating $(FMT_WHITE_B)'$(NAME)'$(FMT_BOLD):$(FMT_DEF)"
 					@$(MAKE) --no-print-directory $(NAME)
 
 $(NAME):			$(OBJS)
-					@echo "$(BOLD)Linking files...$(DEF)"
-					@$(CC) $(OBJS) $(CFLAGS) $(INCLUDES) -o $@
-					@echo "$(WHITE_B)'$(NAME)'$(BOLD) has been created/updated.$(DEF)"
+					@echo -e "$(FMT_BOLD)Linking files...$(FMT_DEF)"
+					@$(CC) $(OBJS) $(CFLAGS) -o $@
+					@echo -e "$(FMT_WHITE_B)'$(NAME)'$(FMT_BOLD) has been created/updated.$(FMT_DEF)"
 
-$(OBJS_DIR)/%.o:	%.cpp | $(OBJS_DIR) 
-					@echo "Assembling $<..."
-					@$(CC) $(CFLAGS) $(DEP_FLAGS) $(INCLUDES) -c $< -o $@
+$(OBJS_DIR)/%.o:	%.cpp | $(OBJS_DIR)
+					@echo -e "Assembling $<..."
+					@$(CC) $(CFLAGS) $(DEP_FLAGS) -c $< -o $@
 
 $(OBJS_DIR):
 					@mkdir -p $@
-					@echo "$(BOLD)Directory '$(OBJS_DIR)' has been created.$(DEF)"
+					@echo -e "$(FMT_BOLD)Directory '$(OBJS_DIR)' has been created.$(FMT_DEF)"
 
 clean:
 					@rm -rf $(OBJS) $(DEPS) $(OBJS_DIR)
-					@echo "$(WHITE)$(NAME): $(BOLD)Object files have been cleaned.$(DEF)"
+					@echo -e "$(FMT_WHITE)$(NAME): $(FMT_BOLD)Object files have been cleaned.$(FMT_DEF)"
 
 fclean:				clean
 					@rm -rf $(NAME)
-					@echo "$(WHITE)'$(NAME)'$(BOLD) has been cleaned.$(DEF)"
+					@echo -e "$(FMT_WHITE)'$(NAME)'$(FMT_BOLD) has been cleaned.$(FMT_DEF)"
 
 re:					fclean all
 
@@ -55,7 +68,7 @@ re:					fclean all
 
 -include $(DEPS)
 
-BOLD	:= \033[0;1m
-WHITE_B	:= \033[1;37m
-WHITE	:= \033[37m
-DEF		:= \033[0;39m
+FMT_BOLD	:= \033[0;1m
+FMT_WHITE_B	:= \033[1;37m
+FMT_WHITE	:= \033[37m
+FMT_DEF		:= \033[0;39m
