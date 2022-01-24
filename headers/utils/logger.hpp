@@ -32,4 +32,4 @@ namespace Utils
     static void info(const std::string& message);
 
   }; //!class Logger
-} //!namespace WS::Utils
+} //!namespace Utils
