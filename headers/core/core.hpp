@@ -1,41 +1,74 @@
 #pragma once
 
+#include <iostream>
+
 namespace WS::Core
 {
-  /* @brief General WebServer class.
+  /* @brief General Server class.
   */
-  class WebServer
+  class Server
   {
   /// singleton part
-    static WebServer *instance_;
+    static Server *instance_;
 
-    WebServer() {}
+    Server() {}
 
   public:
-    WebServer(WebServer& other) = delete;
     
-    void operator=(const WebServer& other) = delete;
+	Server(Server& other) = delete;
+    
+    void operator=(const Server& other) = delete;
 
-    static WebServer&     getInstance(void);
+    static Server&     getInstance(void);
 
   /// Logic part
   public:
-    /* @brief Entry point of WebServer.
-    *         Initiates, configurates and runs the WebServer.
+    
+	Server(std::string ip_addr, int port);
+	
+	/* @brief Server initialization.
     */
-    void  run(void);
+    int		init(void);
 
+	/* @brief Runs the server.
+    */
+    int		run(void);
 
   private:
-    /* @brief Preparing WebServer before work
+    
+	/* @brief Preparing Server before work
     *         (set up logger, read config, add thread poll and etc.)
     *  @exception std::exception  Throws when configuration fails 
     *                             (check error message)
     */    
-    void  configure(void);
+    void	configure(void); // ?
 
-    /* @brief Main function for handling connections
+    /* @brief Handler for client connections
     */
-    void listen(void);
-  }; //!class WebServer
+    void	handleConnection(int client_socket);
+
+	/* @brief Handler for client disconnections
+    */
+    void	handleDisconnection(int client_socket);
+
+	/* @brief Send a message to a client
+    */
+	void	sendMsg(int	socket_to_send, std::string msg, int length);
+
+	/* @brief Recieve a message from a client
+    */
+	void	recvMsg(int	socket_recv_from, std::string msg, int length);
+
+	/* @brief Handle a message recieved from a client
+    */
+	void	handleMsg();
+
+  private:
+    
+	const std::string	ip_addr_;	// ip address from config
+	int					port_;		// port from config
+	int					socket_;	// listening socket
+	
+
+  }; //!class Server
 } //!namespace WS::Core
