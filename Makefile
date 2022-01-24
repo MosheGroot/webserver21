@@ -7,10 +7,15 @@ DEP_FLAGS	:= -MP -MMD
 SRCS_DIRS	:= $(addprefix sources, \
                     / \
                     /utils \
+					/http/parser \
                 )
 HDRS_DIRS	:= $(addprefix headers, \
                     / \
                     /utils \
+					$(addprefix /http, \
+						/models \
+						/parser \
+					) \
                 )
 
 vpath %.cpp	$(SRCS_DIRS)
@@ -21,8 +26,10 @@ vpath %.hpp	$(HDRS_DIRS)
 # 			example2.hpp
 
 SRCS        :=  main.cpp \
+				http/parser/parser.cpp \
                 $(addprefix utils/,\
                     logger.cpp \
+					string.cpp \
                 )
                 # $(addprefix example_dir/,
                 #     example1.cpp,

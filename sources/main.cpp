@@ -1,4 +1,5 @@
 #include "../headers/utils/logger.hpp"
+#include "../headers/http/http.hpp"
 
 int main()
 {

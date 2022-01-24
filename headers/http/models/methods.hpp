@@ -1,14 +1,14 @@
 #pragma once
 
-namespace WS::Http
+namespace Http
 {
-  /* @brief Enumeration class of avaliable HTTP methdos. 
+  /* @brief Enumeration class of avaliable HTTP methdos.
   */
-  enum class Method
+  enum Method
   {
     GET,
     POST,
     DELETE
   };
 
-} //!namespace WS::Http
+} //!namespace Http

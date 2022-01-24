@@ -3,18 +3,26 @@
 #include <string>
 #include <map>
 
-namespace WS::Http
+#include "methods.hpp"
+
+namespace Http
 {
   /* @brief Http request class
   */
   class Request
   {
   public:
-    const std::string version = "HTTP/1.1";
 
-    std::string                         uri;
-    std::map<std::string, std::string>  headers;
-    std::string                         data;
-  
+    // start-line
+    Http::Method    method;     //> method of request
+    std::string     uri;        //> target uri
+    std::string     version;    //> http version of request
+
+    // headers
+    std::map<std::string, std::string>  headers;    //> full list of headers
+
+    // body
+    std::string body;   //> body of POST request
+
   }; //!class Request
-} //!namespace WS::Http
+} //!namespace Http
