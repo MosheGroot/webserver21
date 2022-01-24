@@ -9,13 +9,15 @@ namespace Utils
     /// Logic Part
     int  Logger::error(const std::string& message, int status_code)
     {
-        std::cerr << message << std::endl;
+        const char* prompt = "[ERROR] ";
+        std::cerr << prompt << message << std::endl;
         return status_code;
     }
 
     void Logger::info(const std::string& message)
     {
-        std::cout << message << std::endl;
+        const char* prompt = "[INFO] ";
+        std::cout << prompt << message << std::endl;
     }
 
 } //!namespace WS::Utils
