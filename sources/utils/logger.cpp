@@ -1,16 +1,11 @@
 #include <iostream>
 #include "../../headers/utils/logger.hpp"
 
-namespace WS::Utils
+namespace Utils
 {
     /// Singleton part
-    Logger&   Logger::getInstance(void)
-    {
-      if (instance_ == nullptr)
-        instance_ = new Logger();
-      return *instance_;
-    }
-    
+    Logger  Logger::instance_;
+
     /// Logic Part
     int  Logger::error(const std::string& message, int status_code)
     {
