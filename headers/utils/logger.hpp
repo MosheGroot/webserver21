@@ -2,23 +2,21 @@
 
 #include <string>
 
-namespace WS::Utils
+namespace Utils
 {
   /* @brief Logger as singleton class
   */
   class Logger
   {
   /// singleton part
-    static Logger *instance_;
-
     Logger() {}
 
+    Logger(Logger& other) { (void)other; }                // deleted (private)
+
+    void operator=(const Logger& other) { (void)other; }  // deleted (private)
+
   public:
-    Logger(Logger& other) = delete;
-
-    void operator=(const Logger& other) = delete;
-
-    static Logger&     getInstance(void);
+    static Logger instance_;
 
   /// logic part
   public:
@@ -27,7 +25,7 @@ namespace WS::Utils
         @param status_code  Status to return from function (-1 by default)
     */
     static int  error(const std::string& message, int status_code = -1);
-    
+
     /*  @brief Print info message to stdout.
         @param message      String to print
     */

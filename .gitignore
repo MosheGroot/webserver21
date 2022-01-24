@@ -3,6 +3,9 @@
 .vscode
 bin/**
 
+# Executable
+webserv
+
 # Prerequisites
 *.d
 
