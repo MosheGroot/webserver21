@@ -2,24 +2,19 @@
 
 #include <iostream>
 
-namespace WS::Core
+namespace WS { namespace Core
 {
   /* @brief General Server class.
   */
   class Server
   {
-  /// singleton part
-    static Server *instance_;
-
-    Server() {}
-
   public:
     
+	Server() = delete;
 	Server(Server& other) = delete;
-    
     void operator=(const Server& other) = delete;
 
-    static Server&     getInstance(void);
+    static Server&     getInstance(std::string ip_addr, int port);
 
   /// Logic part
   public:
@@ -28,7 +23,7 @@ namespace WS::Core
 	
 	/* @brief Server initialization.
     */
-    int		init(void);
+    void	init(void);
 
 	/* @brief Runs the server.
     */
@@ -65,10 +60,10 @@ namespace WS::Core
 
   private:
     
+	static Server*		instance_;
 	const std::string	ip_addr_;	// ip address from config
 	int					port_;		// port from config
 	int					socket_;	// listening socket
-	
 
   }; //!class Server
-} //!namespace WS::Core
+}} //!namespace WS::Core
