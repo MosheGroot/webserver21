@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include "./server.hpp"
 
 namespace WS::Config

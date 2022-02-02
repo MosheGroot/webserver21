@@ -1,6 +1,9 @@
 #pragma once
 
 #include <string>
+#include <vector>
+
+#include "./location.hpp"
 
 namespace WS::Config
 {
@@ -8,10 +11,18 @@ namespace WS::Config
             (such as listen ip, port, resources directories and etc.)
   */
   struct ServerConfig
+
   {
-    
-    std::string ip;
+
+    std::string listen;
     std::string port;
+    std::string server_name;
+    std::string root;
+    std::string autoindex;
+    std::string buff_size_body;
+    
+    // < list of locations
+    static std::vector<ServerLocation> location_list;
 
   }; //!class ServerConfig
 } //!namespace WS::Config
