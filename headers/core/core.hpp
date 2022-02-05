@@ -17,8 +17,8 @@ namespace WS { namespace Core
   private:
 
     Server() { }
-    Server(Server& other) { }
-    Server& operator=(const Server& other) { }
+    Server(Server&) { }
+    Server& operator=(const Server&) { return *this; }
 
   public:
 

@@ -14,7 +14,7 @@ namespace WS { namespace Core
   
   Server&	Server::getInstance(std::string ip_addr, int port)
   {
-    if (instance_ == nullptr)
+    if (instance_ == NULL)
       instance_ = new Server(ip_addr, port);
     return *instance_;
   }
