@@ -33,6 +33,7 @@ bin/**
 *.lib
 
 # Executables
+webserv
 *.exe
 *.out
 *.app
