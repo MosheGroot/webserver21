@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Utils
+namespace WS { namespace Utils
 {
   /* @brief Logger as singleton class
   */
@@ -31,5 +31,10 @@ namespace Utils
     */
     static void info(const std::string& message);
 
+    /*  @brief Print debug message to stdout.
+        @param message      String to print
+    */
+    static void debug(const std::string& message);
+    
   }; //!class Logger
-} //!namespace Utils
+}} //!namespace Utils
