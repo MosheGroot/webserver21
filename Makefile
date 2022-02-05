@@ -6,12 +6,12 @@ DEP_FLAGS	:= -MP -MMD
 
 SRCS_DIRS	:= $(addprefix sources, \
                     / \
-          					/core \
+          			/core \
                     /utils \
                 )
 HDRS_DIRS	:= $(addprefix headers, \
                     / \
-          					/core \
+          			/core \
                     /utils \
                 )
 
