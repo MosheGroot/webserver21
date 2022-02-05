@@ -1,10 +1,12 @@
 #include "../../headers/core/core.hpp"
+#include "../../headers/utils/logger.hpp"
 
 #include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <cstring>
+#include <sstream>
 #include <stdexcept>
 #include <unistd.h> // only for close() [very fckng inconvenient]
 
@@ -56,30 +58,34 @@ namespace WS { namespace Core
 
     while (true)
     {
-      std::cout << "IP: " << ip_addr_ << " port: " << port_ << std::endl; // debug
-      std::cout << "Wait for client..." << std::endl; // debug
-      
+      {
+        std::stringstream ss;
+        ss << "IP: " << ip_addr_ << " port: " << port_;
+        Utils::Logger::instance_.info(ss.str());
+        Utils::Logger::instance_.debug("Wait for client...");
+      }
+
       // has to be done in separate thread, cause accept blocks
       if ((client_socket = accept(socket_, (sockaddr *)&client, &client_size)) == -1)
         throw std::runtime_error("Can't connect to client");
-      std::cout << "Client accepted" << std::endl; // debug
+      Utils::Logger::instance_.debug("Client accepted");
 
       while (true)
       {
         std::memset(buf, 0, sizeof(buf));
-        std::cout << "Waiting for message..." << std::endl; // debug
+        Utils::Logger::instance_.info("Waiting for message...");
         switch (bytes = recv(client_socket, buf, 4096, 0)) //?
         {
           case -1:
             throw std::runtime_error("Can't recieve message from client");
           case 0: // normal error; needs to be handled later with threads and sessions
           {
-            std::cout << "recv() has returned 0" << std::endl;
+            Utils::Logger::instance_.info("recv() has returned 0");
             break;
           }
           default:
           {
-            std::cout << "Recieved: " << std::string(buf, 0, bytes) << std::endl;
+            Utils::Logger::instance_.info("Recieved: " + std::string(buf, 0, bytes));
             break;
           }
         }
