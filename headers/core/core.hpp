@@ -24,45 +24,45 @@ namespace WS { namespace Core
 
     /* @brief Server initialization.
       */
-    void	init(void);
+    void  init(void);
 
     /* @brief Runs the server.
       */
-    int		run(void);
+    int   run(void);
     
     /* @brief Preparing Server before work
       *         (set up logger, read config, add thread poll and etc.)
       *  @exception std::exception  Throws when configuration fails 
       *                             (check error message)
       */    
-    void	configure(void); // ?
+    void  configure(void); // ?
 
     /* @brief Handler for client connections
       */
-    void	handleConnection(int client_socket);
+    void  handleConnection(int client_socket);
 
     /* @brief Handler for client disconnections
       */
-    void	handleDisconnection(int client_socket);
+    void  handleDisconnection(int client_socket);
 
     /* @brief Send a message to a client
       */
-    void	sendMsg(int	socket_to_send, std::string msg, int length);
+    void  sendMsg(int socket_to_send, std::string msg, int length);
 
     /* @brief Recieve a message from a client
       */
-    void	recvMsg(int	socket_recv_from, std::string msg, int length);
+    void  recvMsg(int socket_recv_from, std::string msg, int length);
 
     /* @brief Handle a message recieved from a client
       */
-    void	handleMsg();
+    void  handleMsg();
 
   private:
     
     static Server*    instance_;
-    const std::string ip_addr_;	// ip address from config
-    int               port_;		// port from config
-    int               socket_;	// listening socket
+    const std::string ip_addr_; // ip address from config
+    int               port_;    // port from config
+    int               socket_;  // listening socket
 
   }; //!class Server
 }} //!namespace WS::Core

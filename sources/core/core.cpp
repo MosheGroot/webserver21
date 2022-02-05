@@ -12,7 +12,7 @@ namespace WS { namespace Core
 {
   /// Singleton part
   
-  Server&	Server::getInstance(std::string ip_addr, int port)
+  Server& Server::getInstance(std::string ip_addr, int port)
   {
     if (instance_ == NULL)
       instance_ = new Server(ip_addr, port);
@@ -24,14 +24,14 @@ namespace WS { namespace Core
   Server::Server(std::string ip_addr, int port)
   :  ip_addr_(ip_addr), port_(port) { }
 
-  void	Server::init()
+  void  Server::init()
   {
     // create listening socket
     if ((socket_ = socket(AF_INET, SOCK_STREAM, 0)) == -1)
       throw std::runtime_error("Can't create listening socket");
 
     // bind socket
-    sockaddr_in	hint;
+    sockaddr_in hint;
     std::memset(&hint, 0, sizeof(hint));
     hint.sin_family = AF_INET;
     hint.sin_port = htons(port_);
