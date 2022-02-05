@@ -6,10 +6,12 @@ DEP_FLAGS	:= -MP -MMD
 
 SRCS_DIRS	:= $(addprefix sources, \
                     / \
+          					/core \
                     /utils \
                 )
 HDRS_DIRS	:= $(addprefix headers, \
                     / \
+          					/core \
                     /utils \
                 )
 
@@ -21,6 +23,9 @@ vpath %.hpp	$(HDRS_DIRS)
 # 			example2.hpp
 
 SRCS        :=  main.cpp \
+                $(addprefix core/,\
+                    core.cpp \
+                ) \
                 $(addprefix utils/,\
                     logger.cpp \
                 )

@@ -1,6 +1,7 @@
 # Development
 .vs
 .vscode
+.idea
 bin/**
 
 # Executable
@@ -35,6 +36,7 @@ webserv
 *.lib
 
 # Executables
+webserv
 *.exe
 *.out
 *.app
