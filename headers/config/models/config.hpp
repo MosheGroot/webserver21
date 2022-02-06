@@ -2,7 +2,7 @@
 
 #include "./server.hpp"
 
-namespace WS::Config
+namespace WS { namespace Config
 {
   /* @brief Config structure that contains 
             all settings and servers of WebServer
@@ -14,4 +14,4 @@ namespace WS::Config
     static std::vector<ServerConfig> server_list; 
 
   }; //!class Config
-} //!namespace WS::Config
+}} //!namespace WS::Config

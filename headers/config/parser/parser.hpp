@@ -2,7 +2,7 @@
 
 #include "../models/config.hpp"
 
-namespace WS::Config
+namespace WS { namespace Config
 {
   /* @brief Static class Parser, provides method for parsing an entire config
             or one of servers from config.
@@ -26,4 +26,4 @@ namespace WS::Config
     static ServerConfig parseServerConfig(const std::string& data);
 
   }; //!class Parser
-} //!namespace WS::Config
+}} //!namespace WS::Config

@@ -8,11 +8,17 @@ SRCS_DIRS	:= $(addprefix sources, \
                     / \
           			/core \
                     /utils \
+					/config \
                 )
+
 HDRS_DIRS	:= $(addprefix headers, \
                     / \
           			/core \
                     /utils \
+					$(addprefix /config, \
+						/models \
+						/parser \
+					) \
                 )
 
 vpath %.cpp	$(SRCS_DIRS)
@@ -23,11 +29,15 @@ vpath %.hpp	$(HDRS_DIRS)
 # 			example2.hpp
 
 SRCS        :=  main.cpp \
+				$(addprefix config/, \
+					parser.cpp \
+				) \
                 $(addprefix core/,\
                     core.cpp \
                 ) \
                 $(addprefix utils/,\
                     logger.cpp \
+					file.cpp \
                 )
                 # $(addprefix example_dir/,
                 #     example1.cpp,

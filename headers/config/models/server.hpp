@@ -5,13 +5,12 @@
 
 #include "./location.hpp"
 
-namespace WS::Config
+namespace WS { namespace Config
 {
   /* @brief Server configuration structure that contains information of one server 
-            (such as listen ip, port, resources directories and etc.)
+            (such as listen ip, port, locations and etc.)
   */
   struct ServerConfig
-
   {
 
     std::string listen;
@@ -25,4 +24,4 @@ namespace WS::Config
     std::vector<ServerLocation> location_list;
 
   }; //!class ServerConfig
-} //!namespace WS::Config
+}} //!namespace WS::Config
