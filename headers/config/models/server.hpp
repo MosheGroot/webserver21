@@ -22,7 +22,7 @@ namespace WS::Config
     std::string buff_size_body;
     
     // < list of locations
-    static std::vector<ServerLocation> location_list;
+    std::vector<ServerLocation> location_list;
 
   }; //!class ServerConfig
 } //!namespace WS::Config
