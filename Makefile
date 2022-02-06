@@ -43,29 +43,29 @@ DEPS		:= $(addprefix $(OBJS_DIR)/, \
 
 
 all:
-					@echo -e "$(FMT_BOLD)Creating/updating $(FMT_WHITE_B)'$(NAME)'$(FMT_BOLD):$(FMT_DEF)"
+					@echo "$(FMT_BOLD)Creating/updating $(FMT_WHITE_B)'$(NAME)'$(FMT_BOLD):$(FMT_DEF)"
 					@$(MAKE) --no-print-directory $(NAME)
 
 $(NAME):			$(OBJS)
-					@echo -e "$(FMT_BOLD)Linking files...$(FMT_DEF)"
+					@echo "$(FMT_BOLD)Linking files...$(FMT_DEF)"
 					@$(CC) $(OBJS) $(CFLAGS) -o $@
-					@echo -e "$(FMT_WHITE_B)'$(NAME)'$(FMT_BOLD) has been created/updated.$(FMT_DEF)"
+					@echo "$(FMT_WHITE_B)'$(NAME)'$(FMT_BOLD) has been created/updated.$(FMT_DEF)"
 
 $(OBJS_DIR)/%.o:	%.cpp | $(OBJS_DIR)
-					@echo -e "Assembling $<..."
+					@echo "Assembling $<..."
 					@$(CC) $(CFLAGS) $(DEP_FLAGS) -c $< -o $@
 
 $(OBJS_DIR):
 					@mkdir -p $@
-					@echo -e "$(FMT_BOLD)Directory '$(OBJS_DIR)' has been created.$(FMT_DEF)"
+					@echo "$(FMT_BOLD)Directory '$(OBJS_DIR)' has been created.$(FMT_DEF)"
 
 clean:
 					@rm -rf $(OBJS) $(DEPS) $(OBJS_DIR)
-					@echo -e "$(FMT_WHITE)$(NAME): $(FMT_BOLD)Object files have been cleaned.$(FMT_DEF)"
+					@echo "$(FMT_WHITE)$(NAME): $(FMT_BOLD)Object files have been cleaned.$(FMT_DEF)"
 
 fclean:				clean
 					@rm -rf $(NAME)
-					@echo -e "$(FMT_WHITE)'$(NAME)'$(FMT_BOLD) has been cleaned.$(FMT_DEF)"
+					@echo "$(FMT_WHITE)'$(NAME)'$(FMT_BOLD) has been cleaned.$(FMT_DEF)"
 
 re:					fclean all
 
