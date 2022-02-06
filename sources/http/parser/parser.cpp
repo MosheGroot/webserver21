@@ -1,7 +1,7 @@
 #include "../../../headers/http/parser/parser.hpp"
 #include "../../../headers/utils/string.hpp"
 
-namespace Http
+namespace WS { namespace Http
 {
   Request      Parser::deserializeRequest(const std::string& data)
   {
@@ -95,4 +95,4 @@ namespace Http
     throw std::invalid_argument("unsupported HTTP method");
   }
 
-} //!namespace Http
+}} //!namespace WS::Http

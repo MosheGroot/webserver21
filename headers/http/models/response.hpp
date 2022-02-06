@@ -3,7 +3,7 @@
 #include <string>
 #include <stdint.h>
 
-namespace Http
+namespace WS { namespace Http
 {
   /* @brief Http response class
   */
@@ -25,4 +25,4 @@ namespace Http
     std::string body;   //> body of response (can be empty)
 
   }; //!class Response
-} //!namespace Http
+}} //!namespace WS::Http

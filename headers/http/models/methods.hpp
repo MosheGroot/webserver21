@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Http
+namespace WS { namespace Http
 {
   /* @brief Enumeration class of avaliable HTTP methdos.
   */
@@ -11,4 +11,4 @@ namespace Http
     DELETE
   };
 
-} //!namespace Http
+}} //!namespace WS::Http

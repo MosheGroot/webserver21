@@ -6,7 +6,7 @@
 #include "../models/response.hpp"
 #include "../models/methods.hpp"
 
-namespace Http
+namespace WS { namespace Http
 {
   /* @brief Static class Parser, provides method for parsing
             HTTP methods from string
@@ -37,4 +37,4 @@ namespace Http
     static Method  stringToMethod(const std::string& source);
 
   }; //!class Parser
-} //!namespace Http
+}} //!namespace WS::Http

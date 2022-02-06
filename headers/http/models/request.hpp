@@ -5,7 +5,7 @@
 
 #include "methods.hpp"
 
-namespace Http
+namespace WS { namespace Http
 {
   /* @brief Http request class
   */
@@ -25,4 +25,4 @@ namespace Http
     std::string body;   //> body of POST request
 
   }; //!class Request
-} //!namespace Http
+}} //!namespace WS::Http
