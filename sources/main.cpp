@@ -7,7 +7,7 @@ int main()
 
   try
   {
-    WS::Utils::Logger::init();
+    WS::Utils::Logger::init(WS::Utils::Logger::LOGLEV_DEBUG, true);
 
     server.init();
     server.run();

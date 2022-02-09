@@ -11,7 +11,7 @@ namespace WS { namespace Utils
   */
   class Logger
   {
-  /// singleton part
+  /// Singleton part
     Logger() {}
 
     Logger(Logger& other) { (void)other; }                // deleted (private)
@@ -21,9 +21,29 @@ namespace WS { namespace Utils
   public:
     static Logger instance_;
 
-  /// logic part
-  // Log functions part
+  /// Logic part
   public:
+  // General
+    /* @brief Enum for log levels of logger */
+    enum LogLevel
+    {
+      LOGLEV_ERROR = 0,
+      LOGLEV_INFO,
+      LOGLEV_DEBUG
+    };
+
+    /* @brief Init logger before usage.
+              Set up file output and minimum log level.
+
+      @param duplicate_to_file_   Creates log file if true,
+                                  or use console output only otherwise.
+      @param minimum_log_level    Minimum level for logging
+                                  (LOGLEV_ERROR, LOGLEV_INFO or LOGLEV_DEBUG)
+    */
+    static void init(LogLevel minimum_log_level = LOGLEV_INFO, bool duplicate_to_file = true);
+
+
+  // Log functions part
     /*  @brief Print error message to stderr.
         @param message      String to print
         @param status_code  Status to return from function (-1 by default)
@@ -52,14 +72,11 @@ namespace WS { namespace Utils
     static void log(const std::string& message, std::ostream& os,
                     const char *prompt = "LOG", const char *colors = NULL);
 
-    static const bool timestamp_enabled_  = true; //< use timestamps
-    static const int  prompt_max_width_   = 5;    //< max prompt width
+    static const bool         timestamp_enabled_  = true; //< use timestamps
+    static const int          prompt_max_width_   = 5;    //< max prompt width
+    static LogLevel           minimum_log_level_;
 
   // Filesystem part
-  public:
-    static void init();
-
-  private:
     static const bool         duplicate_to_file_ = true;  //< log to file
     static const std::string  logs_directory_;            //< directory for logs
     static std::ofstream      output_fstream_;
