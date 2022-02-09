@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 
 namespace WS { namespace Utils
 {
@@ -35,6 +36,21 @@ namespace WS { namespace Utils
         @param message      String to print
     */
     static void debug(const std::string& message);
-    
+
+  private:
+    /*  @brief Log message with prompt to specified stream.
+        @param message      String to print
+        @param os           Output stream
+        @param prompt       Prompt string to print before main message
+                              (LOG by default)
+        @param colors       Terminal colors for prompt
+                              (empty by default)
+    */
+    static void log(const std::string& message, std::ostream& os,
+                    const char *prompt = "LOG", const char *colors = "");
+
+    static const bool timestamp_enabled_  = true; //< use timestamps
+    static const int  prompt_max_width_   = 5;    //< max prompt width
+
   }; //!class Logger
 }} //!namespace Utils
