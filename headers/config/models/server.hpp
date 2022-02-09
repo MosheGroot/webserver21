@@ -13,13 +13,14 @@ namespace WS { namespace Config
   struct ServerConfig
   {
 
-    std::string listen;
+    std::string ip_addr;
     std::string port;
     std::string server_name;
     std::string root;
     std::string autoindex;
     std::string buff_size_body;
-    
+    std::string error_page;
+
     // < list of locations
     std::vector<ServerLocation> location_list;
 

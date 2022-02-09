@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 namespace WS { namespace Config
 {
   /* @brief Server's location 
@@ -11,7 +9,7 @@ namespace WS { namespace Config
   {
 
     std::string path;
-    std::string method;
+    std::vector<std::string> method;
 
   }; //!class ServerLocation
 }} //!namespace WS::Config
