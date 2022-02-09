@@ -4,13 +4,13 @@
 namespace WS { namespace Utils
 {
 
-  std::string Time::getTimestamp()
+  std::string Time::getTimestamp(const char *format)
   {
     time_t      rawtime = std::time(NULL);
     struct tm*  tm_info = std::localtime(&rawtime);
 
     char    buffer[20] = { '\0' };
-    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
+    strftime(buffer, sizeof(buffer), format, tm_info);
 
     return std::string(buffer);
   }

@@ -3,6 +3,7 @@
 
 #include "../../headers/utils/logger.hpp"
 #include "../../headers/utils/time.hpp"
+#include "../../headers/utils/file.hpp"
 
 namespace WS { namespace Utils
 {
@@ -11,25 +12,32 @@ namespace WS { namespace Utils
 
 
     /// Logic Part
+    // Log functions part
     int  Logger::error(const std::string& message, int status_code)
     {
       Logger::log(message, std::cerr, "ERROR", "\x1B[1;31m");
-      // std::cerr << "\x1B[1;31m[ERROR]\x1B[m " << message << std::endl;
+
+      if (Logger::output_fstream_.is_open())
+        Logger::log(message, Logger::output_fstream_, "ERROR");
+
       return status_code;
     }
 
     void Logger::info(const std::string& message)
     {
       Logger::log(message, std::cout, "INFO", "\x1B[32m");
-      // std::cout << "\x1B[32m[INFO]\x1B[m " << message << std::endl;
+
+      if (Logger::output_fstream_.is_open())
+        Logger::log(message, Logger::output_fstream_, "INFO");
     }
 
     void Logger::debug(const std::string& message)
     {
       Logger::log(message, std::cout, "DEBUG", "\x1B[33m");
-      // std::cout << "\x1B[33m[DEBUG]\x1B[m " << message << std::endl;
-    }
 
+      if (Logger::output_fstream_.is_open())
+        Logger::log(message, Logger::output_fstream_, "DEBUG");
+    }
     void Logger::log(const std::string& message, std::ostream& os,
                       const char *prompt, const char *colors)
     {
@@ -37,12 +45,42 @@ namespace WS { namespace Utils
       if (Logger::timestamp_enabled_)
         os << '[' << Utils::Time::getTimestamp() << "] ";
 
+
       // prompt
-      os << colors << '[' << std::setiosflags(std::ios_base::left)
-          << std::setw(Logger::prompt_max_width_) << prompt << "]\x1B[m ";
+      if (colors)
+        os << colors;
+
+      os << '[' << std::setiosflags(std::ios_base::left)
+          << std::setw(Logger::prompt_max_width_) << prompt << "] ";
+
+      if (colors)
+        os << "\x1B[m";
+
 
       // message
       os << message << std::endl;
     }
+
+
+  // Filesystem part
+  const std::string Logger::logs_directory_ = "resources/logs";
+  std::ofstream     Logger::output_fstream_;
+
+  void  Logger::init()
+  {
+    if (!Logger::duplicate_to_file_)
+      return;
+
+    Utils::File::createPath(Logger::logs_directory_.c_str());
+    Logger::output_fstream_.open(
+      (
+        Logger::logs_directory_
+        + "/log_"
+        + Utils::Time::getTimestamp("%Y-%m-%d")
+        + ".txt"
+      ).c_str(),
+      std::ios_base::app
+    );
+  }
 
 }} //!namespace WS::Utils

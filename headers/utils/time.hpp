@@ -13,10 +13,14 @@ namespace WS { namespace Utils
 
   public:
     /* @brief Get timestamp of current time
-              in default format:
+              with specified format
+              ("%Y-%m-%d %H:%M:%S" by default)
+
+      @param format   Format of timestamp to return
+
       @return Timestamp in std::string container.
     */
-    static std::string getTimestamp();
+    static std::string getTimestamp(const char *format = "%Y-%m-%d %H:%M:%S");
 
   }; //!class File
 }} //!namespace WS::Utils

@@ -2,10 +2,12 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <sys/types.h>
 
 namespace WS { namespace Utils
 {
-  /* @brief Logger as singleton class
+  /* @brief Thread-Unsafe logger as singleton class
   */
   class Logger
   {
@@ -20,6 +22,7 @@ namespace WS { namespace Utils
     static Logger instance_;
 
   /// logic part
+  // Log functions part
   public:
     /*  @brief Print error message to stderr.
         @param message      String to print
@@ -47,10 +50,19 @@ namespace WS { namespace Utils
                               (empty by default)
     */
     static void log(const std::string& message, std::ostream& os,
-                    const char *prompt = "LOG", const char *colors = "");
+                    const char *prompt = "LOG", const char *colors = NULL);
 
     static const bool timestamp_enabled_  = true; //< use timestamps
     static const int  prompt_max_width_   = 5;    //< max prompt width
+
+  // Filesystem part
+  public:
+    static void init();
+
+  private:
+    static const bool         duplicate_to_file_ = true;  //< log to file
+    static const std::string  logs_directory_;            //< directory for logs
+    static std::ofstream      output_fstream_;
 
   }; //!class Logger
 }} //!namespace Utils
