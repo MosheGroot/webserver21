@@ -97,5 +97,4 @@ namespace WS { namespace Utils
   std::ofstream     Logger::output_fstream_;
 
 
-
 }} //!namespace WS::Utils

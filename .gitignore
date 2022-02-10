@@ -8,6 +8,9 @@ logs
 # Executable
 webserv
 
+# Executable
+webserv
+
 # Prerequisites
 *.d
 
