@@ -3,6 +3,8 @@
 #include <iostream>
 #include <sys/select.h> 
 
+#define CLIENT_DISCONNECTED -1
+
 namespace WS { namespace Core
 {
   /* @brief General Server class.
@@ -42,17 +44,9 @@ namespace WS { namespace Core
       */    
     void  configure(void); // ?
 
-    /* @brief Handler for client disconnections
-      */
-    void  handleDisconnection(int client_socket);
-
-    /* @brief Handle a message recieved from a client
-      */
-    void  handleMsg();
-
   private:
 
-    /* @brief Tells if the socket is listening socket
+    /* @brief Tells if the socket is a listening socket
       */
     bool  isListening(int socket) const;
 
@@ -60,19 +54,27 @@ namespace WS { namespace Core
       *  @exception std::exception  Throws when accept() fails 
       *                             (check error message)
       */
-    int  acceptConnection(int listening_socket) const;
+    int   acceptConnection(int listening_socket) const;
 
     /* @brief Handler for client connections
       */
-    void  handleConnection(int client_socket) const;
+    void  handleConnection(int client_socket, fd_set& writefds);
+
+    /* @brief Handler for client disconnections
+      */
+    void  handleDisconnection(int client_socket);
 
     /* @brief Recieve a message from a client
       */
-    void  recvMsg(int socket_recv_from) const;
+    int   recvMsg(int socket_recv_from);
+
+    /* @brief Handle a message recieved from a client
+      */
+    void  handleMsg(std::string msg, int msg_owner) const;
 
     /* @brief Send a message to a client
       */
-    void  sendMsg(int socket_to_send, std::string msg, int length) const;
+    void  sendMsg(int socket_to_send, const char* msg, int msg_size) const;
 
   private:
     
