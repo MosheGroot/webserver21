@@ -47,10 +47,10 @@ SRCS        :=  main.cpp \
 
 OBJS_DIR	:= .objects
 OBJS		:= $(addprefix $(OBJS_DIR)/, \
-				$(notdir $(patsubst %.cpp, %.o, $(SRCS))))
+				$(patsubst %.cpp, %.o, $(SRCS)))
 
 DEPS		:= $(addprefix $(OBJS_DIR)/, \
-				$(notdir $(patsubst %.cpp, %.d, $(SRCS))))
+				$(patsubst %.cpp, %.d, $(SRCS)))
 
 
 all:
@@ -64,6 +64,7 @@ $(NAME):			$(OBJS)
 
 $(OBJS_DIR)/%.o:	%.cpp | $(OBJS_DIR)
 					@echo "Assembling $<..."
+					@mkdir -p $(dir $@)
 					@$(CC) $(CFLAGS) $(DEP_FLAGS) -c $< -o $@
 
 $(OBJS_DIR):
