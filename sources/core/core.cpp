@@ -26,13 +26,15 @@ namespace WS { namespace Core
   Server::Server(std::string ip_addr, int port)
   :  ip_addr_(ip_addr), port_(port) { }
 
-  void  Server::init()
+  void  Server::init() // need to be remade considering more than 1 listening socket
   {
-    // create listening socket
     if ((socket_ = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-      throw std::runtime_error("Can't create listening socket");
+      throw std::runtime_error("Can't create a listening socket()");
 
-    // bind socket
+    int enable = 1;
+    if (setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) == -1)
+      throw std::runtime_error("Can't setsockopt() a listening socket()");
+
     sockaddr_in hint;
     std::memset(&hint, 0, sizeof(hint));
     hint.sin_family = AF_INET;
@@ -40,68 +42,138 @@ namespace WS { namespace Core
     hint.sin_addr.s_addr = INADDR_ANY;
     
     if (bind(socket_, (sockaddr *)&hint, sizeof(hint)) == -1)
-      throw std::runtime_error("Can't bind listening socket");
+      throw std::runtime_error("Can't bind() the socket");
 
-    // listen socket
     if (listen(socket_, SOMAXCONN) == -1)
-      throw std::runtime_error("Can't listen socket");
+      throw std::runtime_error("Can't listen() the socket");
+
+    FD_ZERO(&master_set_);
+    FD_SET(socket_, &master_set_);
   }
 
-  int Server::run() //need refactoring
+  int Server::run()
   {
-    sockaddr_in client;
-    socklen_t   client_size = sizeof(client);
-    int         client_socket;
-    char        buf[4096]; // think about how to handle buffer size
-    char        answer[32] = "Message has been recieved!\n"; //tmp message-buffer for debugging
-    int         bytes;
+    std::stringstream ss;
+    fd_set            readfds;
+    fd_set            writefds;
+    int               new_client_socket;
 
+    ss << "ip: " << ip_addr_ << " port: " << port_ << std::endl;
+    Utils::Logger::instance_.info(ss.str());
+    
     while (true)
     {
-      {
-        std::stringstream ss;
-        ss << "IP: " << ip_addr_ << " port: " << port_;
-        Utils::Logger::instance_.info(ss.str());
-        Utils::Logger::instance_.debug("Wait for client...");
-      }
+      readfds = master_set_;
+      writefds = master_set_;
+      if (select(FD_SETSIZE, &readfds, &writefds, NULL, NULL) == -1)
+        throw std::runtime_error("Can't select() fdsets");
 
-      // has to be done in separate thread, cause accept blocks
-      if ((client_socket = accept(socket_, (sockaddr *)&client, &client_size)) == -1)
-        throw std::runtime_error("Can't connect to client");
-      Utils::Logger::instance_.debug("Client accepted");
-
-      while (true)
+      // check if any socket has changed
+      for (int socket = 0; socket < FD_SETSIZE; socket++) // add tracking for max socket for replacing FD_SETSIZE
       {
-        std::memset(buf, 0, sizeof(buf));
-        Utils::Logger::instance_.info("Waiting for message...");
-        switch (bytes = recv(client_socket, buf, 4096, 0)) //?
+        if (FD_ISSET(socket, &readfds))
         {
-          case -1:
-            throw std::runtime_error("Can't recieve message from client");
-          case 0: // normal error; needs to be handled later with threads and sessions
+          if (isListening(socket))
           {
-            Utils::Logger::instance_.info("recv() has returned 0");
-            break;
+            new_client_socket = acceptConnection(socket);
+            FD_SET(new_client_socket, &master_set_);
           }
-          default:
+          else
           {
-            Utils::Logger::instance_.info("Recieved: " + std::string(buf, 0, bytes));
-            break;
+            handleConnection(socket, writefds);
           }
         }
-
-        if (send(client_socket, answer, sizeof(answer), 0) == -1) //tmp send() for debugging
-          throw std::runtime_error("Can't send() message to client [debugging func call]");
       }
 
-      if (close(client_socket) == -1)
-        throw std::runtime_error("Can't close the client_socket");
+      usleep(100); // because too hot...
     
     } // !while (true)
     
     if (close(socket_) == -1)
-      throw std::runtime_error("Can't close the socket_"); // need to be moved somewhere else
+      throw std::runtime_error("Can't close the socket_"); // kinda useless unless we handle ctr+c; move in separate function
   }
+
+  bool  Server::isListening(int socket) const
+  {
+    if (socket == socket_)
+      return true;
+    return false;
+  }
+
+  int  Server::acceptConnection(int listening_socket) const
+  {
+    std::stringstream ss;
+    // std::stringstream ss1;
+    sockaddr_in       client;
+    socklen_t         client_size = sizeof(client);
+    int               new_client_socket;
+    
+    if ((new_client_socket = accept(listening_socket, (sockaddr *)&client, &client_size)) == -1)
+      throw std::runtime_error("Can't accept() the client");
+    ss << "Client #" << new_client_socket << " has been accepted" << std::endl;
+    Utils::Logger::instance_.info(ss.str());
+
+    // ss1 << "Client #" << new_client_socket << ": s_addr = " << client.sin_addr.s_addr << "; sin_family = " << client.sin_family << "; sin_port = " << client.sin_port;
+    // Utils::Logger::instance_.debug(ss1.str());
+
+    return new_client_socket;
+  }
+
+  void  Server::handleConnection(int client_socket, fd_set& writefds)
+  {
+    if (recvMsg(client_socket) != CLIENT_DISCONNECTED && FD_ISSET(client_socket, &writefds)) //?
+      sendMsg(client_socket, "Message has been recieved!\n", sizeof("Message has been recieved!\n"));
+  }
+
+  void  Server::handleDisconnection(int client_socket)
+  {
+    std::stringstream ss;
+
+    if (close(client_socket) == -1)
+          throw std::runtime_error("Can't close() the client's connection");
+    FD_CLR(client_socket, &master_set_);
+    ss << "Client #" << client_socket << " has disconnected";
+    Utils::Logger::instance_.info(ss.str());
+  }
+
+  void  Server::handleMsg(std::string msg, int msg_owner) const
+  {
+    std::stringstream ss;
+
+    ss << "#" << msg_owner << " Recieved: " << msg;
+      Utils::Logger::instance_.info(ss.str());
+  }
+
+  int  Server::recvMsg(int socket_recv_from)
+  {
+    char              buf[4096]; // max_body_size + header
+    int               bytes;
+
+    std::memset(buf, 0, sizeof(buf));
+    
+    switch (bytes = recv(socket_recv_from, buf, 4096, 0))
+    {
+      case -1:
+        throw std::runtime_error("Can't recieve() message from the client");
+      case 0:
+      {
+        handleDisconnection(socket_recv_from);
+        return CLIENT_DISCONNECTED;
+      }
+      default:
+      {
+        handleMsg(std::string(buf, 0, bytes), socket_recv_from);
+        return 0;
+      }
+    }
+  }
+
+  void  Server::sendMsg(int socket_to_send, const char* msg, int msg_size) const
+  {
+    if (send(socket_to_send, msg, msg_size, 0) == -1)
+      throw std::runtime_error("Can't send() message to the client"); // It's a regular error, not an exception
+  }
+
 }} //!namespace WS::Core
 
 WS::Core::Server* WS::Core::Server::instance_;
