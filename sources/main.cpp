@@ -15,7 +15,17 @@ void  printConf(WS::Config::Config &conf)
     std::cout << "autoindex       " << conf.server_list[i].autoindex << std::endl;
     std::cout << "buff_size_body  " << conf.server_list[i].buff_size_body << std::endl;
     std::cout << "error_page      " << conf.server_list[i].error_page << std::endl;
-    std::cout << "location        " << conf.server_list[i].location_list.size() << std::endl;
+
+    int m = (int)conf.server_list[i].location_list.size();
+    for (int j = 0; j < m; j++)
+    {
+      std::cout << "location:" << std::endl;
+      std::cout << "    path      " << conf.server_list[i].location_list[j].path << std::endl;
+
+      int l = (int)conf.server_list[i].location_list[j].method.size();
+      for (int k = 0; k < l; k++)
+        std::cout << "    method    " << conf.server_list[i].location_list[j].method[k] << std::endl;
+    }
   }
 }
 

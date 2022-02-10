@@ -1,21 +1,29 @@
 server
-listen localhost
-server_name localhost
-port 80
-root /var/www
-autoindex off
-buff_size_body 1024
-error_page !!!!
-location /
-    method GET POST
+  listen localhost
+  server_name localhost
+  port 80
+  root /var/www
+  autoindex off
+  buff_size_body 1024
+  error_page !!!!
+  location /
+    method GET
+  location /main
+    method DELETE PATCH
+  location /admin
 
 server
-listen localhost
-server_name webserv
-port 80
-root /var/www
-autoindex off
-buff_size_body 1024
-error_page !!!!
-location /
-    method GET POST
+  listen localhost
+  server_name webserv
+  port 443
+  root /usr
+  autoindex on
+  buff_size_body 1024
+  error_page !!!!
+  location /
+    method POST
+  location /admin
+  location /web
+    method GET DELETE
+  location /ky-ky
+    method PATCH

@@ -13,8 +13,9 @@ namespace WS { namespace Config
     while(!conffile.eof())
     {
       getline(conffile, data);
-      std::cout << data << std::endl;
-      if (data == "server")
+      if (data.size() == 0)
+        continue;
+      else if (data == "server")
         parseServerConfig(conffile, out);
       else
         throw WrongConfigException();
@@ -60,15 +61,28 @@ namespace WS { namespace Config
   {
     ServerLocation  new_location;
     std::string     data;
-    
+    std::vector<std::string>  result;
+
     new_location.path = path;
     while(!conffile.eof())
     {
       getline(conffile, data);
-      if (data.size() == 0) {
-        // std::cout << data  << std::endl;
+      if (data.size() == 0)
         break;
+      result = splitStr(data);
+      if (result[0] == "method")
+      {
+        for (int i = 1; i < (int)result.size(); i++)
+          new_location.method.push_back(result[i]);
       }
+      else if (result[0] == "location")
+      {
+        out.location_list.push_back(new_location);
+        new_location.path = result[1];
+        new_location.method.clear();
+      }
+      else
+        break;
     }
     out.location_list.push_back(new_location);
   }
@@ -94,7 +108,7 @@ namespace WS { namespace Config
     {
       if (line[i] != ' ')
         buffer += line[i];
-      if (line[i] == ' ' || i == len -1)
+      if ((line[i] == ' ' && buffer.size() > 0) || i == len -1)
       {
         result.push_back(buffer);
         buffer = "";
