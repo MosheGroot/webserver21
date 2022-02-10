@@ -4,6 +4,7 @@
 .idea
 bin/**
 logs
+.objects
 
 # Executable
 webserv
