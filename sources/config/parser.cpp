@@ -1,4 +1,4 @@
-#include "../../headers/config/parser/parser.hpp"
+#include "../../headers/config/config.hpp"
 
 namespace WS { namespace Config
 {
@@ -32,21 +32,25 @@ namespace WS { namespace Config
     {
       getline(conffile, data);
       result = splitStr(data);
-      if (result[0] == "listen")
+      int len = (int)result.size();
+      if (result[0] == "listen" && len == 2)
         new_server.ip_addr = result[1];
-      else if (result[0] == "server_name")
-        new_server.server_name = result[1];
-      else if (result[0] == "port")
+      else if (result[0] == "server_name" && len > 1)
+      {
+        for (int i = 1; i < len; i++) 
+          new_server.server_name.push_back(result[i]);
+      }
+      else if (result[0] == "port" && len == 2)
         new_server.port = result[1];
-      else if (result[0] == "root")
+      else if (result[0] == "root" && len == 2)
         new_server.root = result[1];
-      else if (result[0] == "autoindex")
+      else if (result[0] == "autoindex" && len == 2)
         new_server.autoindex = result[1];
-      else if (result[0] == "buff_size_body")
+      else if (result[0] == "buff_size_body" && len == 2)
         new_server.buff_size_body = result[1];
-      else if (result[0] == "error_page")
+      else if (result[0] == "error_page" && len == 2)
         new_server.error_page = result[1];
-      else if (result[0] == "location")
+      else if (result[0] == "location" && len == 2)
       {
         parseServerLocation(conffile, new_server, result[1]);
         break;
@@ -54,6 +58,10 @@ namespace WS { namespace Config
       else
         throw WrongConfigException();
     }
+    if (new_server.port == "")
+      new_server.port = "8080";
+    if (new_server.ip_addr == "" || new_server.ip_addr == "localhost")
+      new_server.ip_addr = "127.0.0.1";
     out.server_list.push_back(new_server);
   }
 
@@ -70,19 +78,25 @@ namespace WS { namespace Config
       if (data.size() == 0)
         break;
       result = splitStr(data);
-      if (result[0] == "method")
+      int len = (int)result.size();
+      if (result[0] == "method" && len > 1)
       {
-        for (int i = 1; i < (int)result.size(); i++)
+        for (int i = 1; i < len; i++)
           new_location.method.push_back(result[i]);
       }
-      else if (result[0] == "location")
+      else if (result[0] == "root" && len == 2)
+        new_location.root = result[1];
+      else if (result[0] == "location" && len == 2)
       {
         out.location_list.push_back(new_location);
         new_location.path = result[1];
+        new_location.root = "";
         new_location.method.clear();
       }
-      else
+      else if (len == 0)
         break;
+      else
+        throw WrongConfigException();
     }
     out.location_list.push_back(new_location);
   }

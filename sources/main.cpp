@@ -9,7 +9,16 @@ void  printConf(WS::Config::Config &conf)
   {
     std::cout << "\n ------- SERVER -------" << std::endl;
     std::cout << "ip_addr         " << conf.server_list[i].ip_addr << std::endl;
-    std::cout << "server_name     " << conf.server_list[i].server_name << std::endl;
+
+    std::cout << "server_name     ";
+    int s = (int)conf.server_list[i].server_name.size();
+    if (s > 0)
+    {
+      for (int v = 0; v < s; v++)
+        std::cout << conf.server_list[i].server_name[v] << " ";      
+    }
+    std::cout << std::endl;
+
     std::cout << "port            " << conf.server_list[i].port << std::endl;
     std::cout << "root            " << conf.server_list[i].root << std::endl;
     std::cout << "autoindex       " << conf.server_list[i].autoindex << std::endl;
@@ -21,10 +30,16 @@ void  printConf(WS::Config::Config &conf)
     {
       std::cout << "location:" << std::endl;
       std::cout << "    path      " << conf.server_list[i].location_list[j].path << std::endl;
+      std::cout << "    root      " << conf.server_list[i].location_list[j].root << std::endl;
 
+      std::cout << "    method    ";
       int l = (int)conf.server_list[i].location_list[j].method.size();
-      for (int k = 0; k < l; k++)
-        std::cout << "    method    " << conf.server_list[i].location_list[j].method[k] << std::endl;
+      if (l > 0)
+      {
+        for (int k = 0; k < l; k++)
+          std::cout << conf.server_list[i].location_list[j].method[k] << " ";
+      }
+      std::cout << std::endl;
     }
   }
 }
@@ -36,20 +51,17 @@ int main(int argc, char *argv[])
 
   WS::Config::Config conf;
   WS::Config::Parser::parsFile(argv[1], conf);
-  printConf(conf);
+  // printConf(conf);
 
-  // WS::Core::Server& server = WS::Core::Server::getInstance("IP_ADDR", 54001);
+  WS::Core::Server& server = WS::Core::Server::getInstance("IP_ADDR", 54001);
 
-  // if (conf)
-    // return 0;
-  // std::cout << conf.server_list.size() << std::endl;
-  // try
-  // {
-  //   server.init();
-  //   server.run();
-  // }
-  // catch(const std::exception& e)
-  // {
-  //   std::cerr << e.what() << '\n';
-  // }
+  try
+  {
+    server.init();
+    server.run();
+  }
+  catch(const std::exception& e)
+  {
+    std::cerr << e.what() << '\n';
+  }
 }
