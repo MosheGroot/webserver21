@@ -3,14 +3,15 @@
 #include "../headers/utils/debug.hpp"
 #include "../headers/utils/logger.hpp"
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
-  if (argc != 2)
-    return 0;
+  const char *config_name = "resources/configs/default.conf";
+  if (argc >= 2)
+    config_name = argv[1];
 
   WS::Config::Config conf;
-  WS::Config::Parser::parsFile(argv[1], conf);
-  // WS::Utils::Debug::printConf(conf); // < DEBUG
+  WS::Config::Parser::parsFile(config_name, conf);
+  WS::Utils::Debug::printConf(conf); // < DEBUG
 
   WS::Core::Server& server = WS::Core::Server::getInstance("IP_ADDR", 54001, conf);
 
