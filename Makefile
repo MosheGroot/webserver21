@@ -47,7 +47,8 @@ SRCS		:=  main.cpp \
 				$(addprefix utils/,\
 					logger.cpp \
 					file.cpp \
-					time.cpp \
+					debug.cpp \
+          time.cpp \
 					string.cpp \
 				) 
 				# $(addprefix example_dir/,

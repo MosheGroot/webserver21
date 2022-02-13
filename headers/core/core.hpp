@@ -5,6 +5,8 @@
 
 #define CLIENT_DISCONNECTED -1
 
+#include "../../headers/config/config.hpp"
+
 namespace WS { namespace Core
 {
   /* @brief General Server class.
@@ -14,8 +16,8 @@ namespace WS { namespace Core
   
   public:
   
-    Server(std::string ip_addr, int port);
-    static Server&  getInstance(std::string ip_addr, int port);
+    Server(std::string ip_addr, int port, const Config::Config& conf);
+    static Server&  getInstance(std::string ip_addr, int port, const Config::Config& conf);
 
   private:
 
@@ -83,6 +85,7 @@ namespace WS { namespace Core
     int               port_;
     int               socket_;
     fd_set            master_set_;
+    Config::Config    conf_;    // config of webserver
 
   }; //!class Server
 }} //!namespace WS::Core

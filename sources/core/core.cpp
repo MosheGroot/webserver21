@@ -14,17 +14,17 @@ namespace WS { namespace Core
 {
   /// Singleton part
   
-  Server& Server::getInstance(std::string ip_addr, int port)
+  Server& Server::getInstance(std::string ip_addr, int port, const Config::Config& conf)
   {
     if (instance_ == NULL)
-      instance_ = new Server(ip_addr, port);
+      instance_ = new Server(ip_addr, port, conf);
     return *instance_;
   }
 
   /// Logic part
 
-  Server::Server(std::string ip_addr, int port)
-  :  ip_addr_(ip_addr), port_(port) { }
+  Server::Server(std::string ip_addr, int port, const Config::Config& conf)
+  :  ip_addr_(ip_addr), port_(port), conf_(conf) { }
 
   void  Server::init() // need to be remade considering more than 1 listening socket
   {
