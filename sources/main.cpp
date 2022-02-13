@@ -1,6 +1,7 @@
 #include "../headers/core/core.hpp"
 #include "../headers/config/config.hpp"
 #include "../headers/utils/debug.hpp"
+#include "../headers/utils/logger.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -15,6 +16,8 @@ int main(int argc, char *argv[])
 
   try
   {
+    WS::Utils::Logger::init(WS::Utils::Logger::LOGLEV_DEBUG, true);
+
     server.init();
     server.run();
   }

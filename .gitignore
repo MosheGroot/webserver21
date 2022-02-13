@@ -3,6 +3,11 @@
 .vscode
 .idea
 bin/**
+logs
+.objects
+
+# Executable
+webserv
 
 # Executable
 webserv

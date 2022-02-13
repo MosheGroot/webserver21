@@ -5,21 +5,27 @@ CFLAGS		:= -Wall -Wextra -Werror -std=c++98
 DEP_FLAGS	:= -MP -MMD
 
 SRCS_DIRS	:= $(addprefix sources, \
-                    / \
-          			/core \
-                    /utils \
+					/ \
+		  			/core \
+					/utils \
 					/config \
-                )
+					/http \
+				)
 
 HDRS_DIRS	:= $(addprefix headers, \
-                    / \
-          			/core \
-                    /utils \
+					/ \
+		  			/core \
+					/utils \
 					$(addprefix /config, \
 						/models \
 						/parser \
 					) \
-                )
+					$(addprefix /http, \
+						/models \
+						/parser \
+					) \
+				)
+
 
 vpath %.cpp	$(SRCS_DIRS)
 vpath %.hpp	$(HDRS_DIRS)
@@ -28,29 +34,34 @@ vpath %.hpp	$(HDRS_DIRS)
 # HDRS		:= Example1.class.hpp \
 # 			example2.hpp
 
-SRCS        :=  main.cpp \
+SRCS		:=  main.cpp \
 				$(addprefix config/, \
 					parser.cpp \
 				) \
-                $(addprefix core/,\
-                    core.cpp \
-                ) \
-                $(addprefix utils/,\
-                    logger.cpp \
+				$(addprefix core/,\
+					core.cpp \
+				) \
+				$(addprefix http/, \
+					parser.cpp \
+				) \
+				$(addprefix utils/,\
+					logger.cpp \
 					file.cpp \
 					debug.cpp \
-                )
-                # $(addprefix example_dir/,
-                #     example1.cpp,
-                #     example2.cpp
-                # )
+          time.cpp \
+					string.cpp \
+				) 
+				# $(addprefix example_dir/,
+				#	 example1.cpp,
+				#	 example2.cpp
+				# )
 
 OBJS_DIR	:= .objects
 OBJS		:= $(addprefix $(OBJS_DIR)/, \
-				$(notdir $(patsubst %.cpp, %.o, $(SRCS))))
+				$(patsubst %.cpp, %.o, $(SRCS)))
 
 DEPS		:= $(addprefix $(OBJS_DIR)/, \
-				$(notdir $(patsubst %.cpp, %.d, $(SRCS))))
+				$(patsubst %.cpp, %.d, $(SRCS)))
 
 
 all:
@@ -64,6 +75,7 @@ $(NAME):			$(OBJS)
 
 $(OBJS_DIR)/%.o:	%.cpp | $(OBJS_DIR)
 					@echo "Assembling $<..."
+					@mkdir -p $(dir $@)
 					@$(CC) $(CFLAGS) $(DEP_FLAGS) -c $< -o $@
 
 $(OBJS_DIR):
