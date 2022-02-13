@@ -15,11 +15,16 @@ namespace WS { namespace Config
 
     std::string ip_addr;
     std::string port;
+
+    std::vector<std::string>    server_name;
+
     std::string root;
+    std::string index;
+    std::string error_page;
+    
     std::string autoindex;
     std::string buff_size_body;
-    std::string error_page;
-    std::vector<std::string>    server_name;
+
     std::vector<ServerLocation> location_list;
 
   }; //!class ServerConfig

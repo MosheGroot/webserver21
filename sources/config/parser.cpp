@@ -2,8 +2,6 @@
 
 namespace WS { namespace Config
 {
-  std::vector<ServerConfig> Config::server_list;
-
   void              Parser::parseConfig(std::ifstream& conffile, Config &out)
   {
     std::string     data;
@@ -44,6 +42,8 @@ namespace WS { namespace Config
         new_server.port = result[1];
       else if (result[0] == "root" && len == 2)
         new_server.root = result[1];
+      else if (result[0] == "index" && len == 2)
+        new_server.index = result[1];
       else if (result[0] == "autoindex" && len == 2)
         new_server.autoindex = result[1];
       else if (result[0] == "buff_size_body" && len == 2)
@@ -86,6 +86,8 @@ namespace WS { namespace Config
       }
       else if (result[0] == "root" && len == 2)
         new_location.root = result[1];
+      else if (result[0] == "index" && len == 2)
+        new_location.index = result[1];
       else if (result[0] == "location" && len == 2)
       {
         out.location_list.push_back(new_location);

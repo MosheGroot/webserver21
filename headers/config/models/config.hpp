@@ -10,7 +10,7 @@ namespace WS { namespace Config
   struct Config 
   {
 
-    static std::vector<ServerConfig> server_list; 
+    std::vector<ServerConfig> server_list; 
 
   }; //!class Config
 }} //!namespace WS::Config
