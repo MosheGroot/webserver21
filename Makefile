@@ -26,13 +26,8 @@ HDRS_DIRS	:= $(addprefix headers, \
 					) \
 				)
 
-
 vpath %.cpp	$(SRCS_DIRS)
 vpath %.hpp	$(HDRS_DIRS)
-
-# why need HDRS?
-# HDRS		:= Example1.class.hpp \
-# 			example2.hpp
 
 SRCS		:=  main.cpp \
 				$(addprefix config/, \

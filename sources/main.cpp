@@ -9,17 +9,12 @@ int main(int argc, const char *argv[])
   if (argc >= 2)
     config_name = argv[1];
 
-  WS::Config::Config conf;
-  WS::Config::Parser::parsFile(config_name, conf);
-  WS::Utils::Debug::printConf(conf); // < DEBUG
-
-  WS::Core::Server& server = WS::Core::Server::getInstance("IP_ADDR", 54001, conf);
-
   try
   {
     WS::Utils::Logger::init(WS::Utils::Logger::LOGLEV_DEBUG, true);
+    WS::Core::Server& server = WS::Core::Server::getInstance();
 
-    server.init();
+    server.init(config_name);
     server.run();
   }
   catch(const std::exception& e)

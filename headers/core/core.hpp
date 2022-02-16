@@ -15,9 +15,8 @@ namespace WS { namespace Core
   {
   
   public:
-  
-    Server(std::string ip_addr, int port, const Config::Config& conf);
-    static Server&  getInstance(std::string ip_addr, int port, const Config::Config& conf);
+
+    static Server instance_;
 
   private:
 
@@ -27,24 +26,26 @@ namespace WS { namespace Core
 
   public:
 
+    static Server &  getInstance();
+    
     /* @brief Server initialization.
       *  @exception std::exception  Throws when function fails 
       *                             (check error message)
       */
-    void  init(void);
+    void    init(const char* config_path);
 
     /* @brief Runs the server.
       *  @exception std::exception  Throws when function fails 
       *                             (check error message)
       */
-    int   run(void);
+    int     run(void);
     
     /* @brief Preparing Server before work
       *         (set up logger, read config, add thread poll and etc.)
       *  @exception std::exception  Throws when configuration fails 
       *                             (check error message)
       */    
-    void  configure(void); // ?
+    void    configure(void); // ?
 
   private:
 
@@ -79,13 +80,10 @@ namespace WS { namespace Core
     void  sendMsg(int socket_to_send, const char* msg, int msg_size) const;
 
   private:
-    
-    static Server*    instance_;
-    const std::string ip_addr_;
-    int               port_;
-    int               socket_;
-    fd_set            master_set_;
-    Config::Config    conf_;    // config of webserver
+
+    int                   socket_;
+    fd_set                master_set_;
+    const Config::Config  conf_;
 
   }; //!class Server
 }} //!namespace WS::Core

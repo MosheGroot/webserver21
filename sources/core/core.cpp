@@ -1,5 +1,6 @@
 #include "../../headers/core/core.hpp"
 #include "../../headers/utils/logger.hpp"
+#include "../../headers/utils/debug.hpp"
 
 #include <iostream>
 #include <sys/types.h>
@@ -10,35 +11,31 @@
 #include <stdexcept>
 #include <unistd.h> // only for close() [very fckng inconvenient]
 
+#include <stdlib.h> // remove
+
 namespace WS { namespace Core
 {
-  /// Singleton part
   
-  Server& Server::getInstance(std::string ip_addr, int port, const Config::Config& conf)
+  Server  Server::instance_;
+  Server&  Server::getInstance() { return instance_; }
+
+  void  Server::init(const char* config_path) // need to be remade considering more than 1 listening socket
   {
-    if (instance_ == NULL)
-      instance_ = new Server(ip_addr, port, conf);
-    return *instance_;
-  }
+    WS::Config::Parser::parsFile(config_path, const_cast<Config::Config&>(conf_));
+    WS::Utils::Debug::printConf(conf_); // < DEBUG
 
-  /// Logic part
-
-  Server::Server(std::string ip_addr, int port, const Config::Config& conf)
-  :  ip_addr_(ip_addr), port_(port), conf_(conf) { }
-
-  void  Server::init() // need to be remade considering more than 1 listening socket
-  {
     if ((socket_ = socket(AF_INET, SOCK_STREAM, 0)) == -1)
       throw std::runtime_error("Can't create a listening socket()");
 
     int enable = 1;
     if (setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) == -1)
-      throw std::runtime_error("Can't setsockopt() a listening socket()");
+      throw std::runtime_error("Can't setsockopt() at listening socket");
 
     sockaddr_in hint;
     std::memset(&hint, 0, sizeof(hint));
     hint.sin_family = AF_INET;
-    hint.sin_port = htons(port_);
+    uint16_t tmp_port = atoi(conf_.server_list[0].port.c_str()); //remove
+    hint.sin_port = htons(tmp_port);
     hint.sin_addr.s_addr = INADDR_ANY;
     
     if (bind(socket_, (sockaddr *)&hint, sizeof(hint)) == -1)
@@ -58,9 +55,9 @@ namespace WS { namespace Core
     fd_set            writefds;
     int               new_client_socket;
 
-    ss << "ip: " << ip_addr_ << " port: " << port_ << std::endl;
+    ss << "ip: " << conf_.server_list[0].ip_addr << " port: " << conf_.server_list[0].port << std::endl;
     Utils::Logger::instance_.info(ss.str());
-    
+
     while (true)
     {
       readfds = master_set_;
@@ -175,5 +172,3 @@ namespace WS { namespace Core
   }
 
 }} //!namespace WS::Core
-
-WS::Core::Server* WS::Core::Server::instance_;
