@@ -6,12 +6,13 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <cstring>
 #include <sstream>
 #include <stdexcept>
 #include <unistd.h> // only for close() [very fckng inconvenient]
 
-#include <stdlib.h> // remove
+#include <stdlib.h> // remove // atoi
 
 namespace WS { namespace Core
 {
@@ -19,33 +20,42 @@ namespace WS { namespace Core
   Server  Server::instance_;
   Server&  Server::getInstance() { return instance_; }
 
-  void  Server::init(const char* config_path) // need to be remade considering more than 1 listening socket
+  void  Server::init(const char* config_path)
   {
+    std::stringstream ss;
+
     WS::Config::Parser::parsFile(config_path, const_cast<Config::Config&>(conf_));
     WS::Utils::Debug::printConf(conf_); // < DEBUG
 
-    if ((socket_ = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-      throw std::runtime_error("Can't create a listening socket()");
-
-    int enable = 1;
-    if (setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) == -1)
-      throw std::runtime_error("Can't setsockopt() at listening socket");
-
-    sockaddr_in hint;
-    std::memset(&hint, 0, sizeof(hint));
-    hint.sin_family = AF_INET;
-    uint16_t tmp_port = atoi(conf_.server_list[0].port.c_str()); //remove
-    hint.sin_port = htons(tmp_port);
-    hint.sin_addr.s_addr = INADDR_ANY;
-    
-    if (bind(socket_, (sockaddr *)&hint, sizeof(hint)) == -1)
-      throw std::runtime_error("Can't bind() the socket");
-
-    if (listen(socket_, SOMAXCONN) == -1)
-      throw std::runtime_error("Can't listen() the socket");
-
     FD_ZERO(&master_set_);
-    FD_SET(socket_, &master_set_);
+
+    listening_socket_.reserve(conf_.server_list.size());
+    for (size_t i = 0; i < conf_.server_list.size(); i++)
+    {
+      listening_socket_.push_back(socket(AF_INET, SOCK_STREAM, 0));
+      if ((listening_socket_[i]) == -1)
+        throw std::runtime_error("Can't create a listening socket(): " + std::string(strerror(errno)));
+
+      int enable = 1;
+      if (setsockopt(listening_socket_[i], SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) == -1)
+        throw std::runtime_error("Can't setsockopt() at listening socket: " + std::string(strerror(errno)));
+
+      sockaddr_in hint;
+      std::memset(&hint, 0, sizeof(hint));
+      hint.sin_family = AF_INET;
+      uint16_t tmp_port = atoi(conf_.server_list[i].port.c_str()); //remove
+      hint.sin_port = htons(tmp_port);
+      if ((hint.sin_addr.s_addr = inet_addr(conf_.server_list[i].ip_addr.c_str())) == INADDR_NONE)
+        throw std::runtime_error("Non valid ip_addr: " + std::string(strerror(errno)));
+      if (bind(listening_socket_[i], (sockaddr *)&hint, sizeof(hint)) == -1)
+      {
+        throw std::runtime_error("Can't bind() the socket: " + std::string(strerror(errno)));
+      }
+      if (listen(listening_socket_[i], SOMAXCONN) == -1)
+        throw std::runtime_error("Can't listen() the socket: " + std::string(strerror(errno)));
+
+      FD_SET(listening_socket_[i], &master_set_);
+    }
   }
 
   int Server::run()
@@ -55,15 +65,16 @@ namespace WS { namespace Core
     fd_set            writefds;
     int               new_client_socket;
 
-    ss << "ip: " << conf_.server_list[0].ip_addr << " port: " << conf_.server_list[0].port << std::endl;
-    Utils::Logger::instance_.info(ss.str());
-
+    // for (size_t i = 0; i < conf_.server_list.size(); i++) // remade
+    //   ss << "ip: " << conf_.server_list[i].ip_addr << " port: " << conf_.server_list[i].port << std::endl;
+    // Utils::Logger::instance_.debug(ss.str());
+    
     while (true)
     {
       readfds = master_set_;
       writefds = master_set_;
       if (select(FD_SETSIZE, &readfds, &writefds, NULL, NULL) == -1)
-        throw std::runtime_error("Can't select() fdsets");
+        throw std::runtime_error("Can't select() fdsets: " + std::string(strerror(errno)));
 
       // check if any socket has changed
       for (int socket = 0; socket < FD_SETSIZE; socket++) // add tracking for max socket for replacing FD_SETSIZE
@@ -82,36 +93,39 @@ namespace WS { namespace Core
         }
       }
 
-      usleep(100); // because too hot...
+      usleep(100); // because too hot... // remove!
     
-    } // !while (true)
+    }
     
-    if (close(socket_) == -1)
-      throw std::runtime_error("Can't close the socket_"); // kinda useless unless we handle ctr+c; move in separate function
+    closeListeningSockets();
+
   }
 
   bool  Server::isListening(int socket) const
   {
-    if (socket == socket_)
-      return true;
+    for (size_t i = 0; i < conf_.server_list.size(); i++)
+    {
+      if (socket == listening_socket_[i])
+        return true;
+    }
     return false;
   }
 
   int  Server::acceptConnection(int listening_socket) const
   {
     std::stringstream ss;
-    // std::stringstream ss1;
+    std::stringstream ss1;
     sockaddr_in       client;
     socklen_t         client_size = sizeof(client);
     int               new_client_socket;
-    
+
     if ((new_client_socket = accept(listening_socket, (sockaddr *)&client, &client_size)) == -1)
-      throw std::runtime_error("Can't accept() the client");
+      throw std::runtime_error("Can't accept() the client: " + std::string(strerror(errno)));
     ss << "Client #" << new_client_socket << " has been accepted" << std::endl;
     Utils::Logger::instance_.info(ss.str());
 
-    // ss1 << "Client #" << new_client_socket << ": s_addr = " << client.sin_addr.s_addr << "; sin_family = " << client.sin_family << "; sin_port = " << client.sin_port;
-    // Utils::Logger::instance_.debug(ss1.str());
+    ss1 << "Client #" << new_client_socket << ": " << inet_ntoa(client.sin_addr) << ":" << htons(client.sin_port); // remove!
+    Utils::Logger::instance_.debug(ss1.str());
 
     return new_client_socket;
   }
@@ -127,7 +141,7 @@ namespace WS { namespace Core
     std::stringstream ss;
 
     if (close(client_socket) == -1)
-          throw std::runtime_error("Can't close() the client's connection");
+          throw std::runtime_error("Can't close() the client's connection: " + std::string(strerror(errno)));
     FD_CLR(client_socket, &master_set_);
     ss << "Client #" << client_socket << " has disconnected";
     Utils::Logger::instance_.info(ss.str());
@@ -147,11 +161,11 @@ namespace WS { namespace Core
     int               bytes;
 
     std::memset(buf, 0, sizeof(buf));
-    
+
     switch (bytes = recv(socket_recv_from, buf, 4096, 0))
     {
       case -1:
-        throw std::runtime_error("Can't recieve() message from the client");
+        throw std::runtime_error("Can't recieve() message from the client: " + std::string(strerror(errno))); // Mb it's a regular error, not an exception
       case 0:
       {
         handleDisconnection(socket_recv_from);
@@ -159,7 +173,7 @@ namespace WS { namespace Core
       }
       default:
       {
-        handleMsg(std::string(buf, 0, bytes), socket_recv_from);
+        handleMsg(std::string(buf, 0, bytes), socket_recv_from); // if any errors -> disconnetct
         return 0;
       }
     }
@@ -168,7 +182,17 @@ namespace WS { namespace Core
   void  Server::sendMsg(int socket_to_send, const char* msg, int msg_size) const
   {
     if (send(socket_to_send, msg, msg_size, 0) == -1)
-      throw std::runtime_error("Can't send() message to the client"); // It's a regular error, not an exception
+      throw std::runtime_error("Can't send() message to the client: " + std::string(strerror(errno))); // It's a regular error, not an exception
+  }
+
+  void  Server::closeListeningSockets() const
+  {
+    for (size_t i = 0; i < conf_.server_list.size() ; i++)
+    {
+      if (close(listening_socket_[i]) == -1)
+        throw std::runtime_error("Can't close a listening socket: " + std::string(strerror(errno)));
+    }
+    
   }
 
 }} //!namespace WS::Core

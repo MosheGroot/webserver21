@@ -5,20 +5,20 @@
 
 int main(int argc, const char *argv[])
 {
-  const char *config_name = "resources/configs/default.conf";
+  const char *config_path = "resources/configs/default.conf";
   if (argc >= 2)
-    config_name = argv[1];
+    config_path = argv[1];
 
   try
   {
     WS::Utils::Logger::init(WS::Utils::Logger::LOGLEV_DEBUG, true);
     WS::Core::Server& server = WS::Core::Server::getInstance();
 
-    server.init(config_name);
+    server.init(config_path);
     server.run();
   }
   catch(const std::exception& e)
   {
-    std::cerr << e.what() << '\n';
+    std::cerr << e.what() << std::endl;
   }
 }

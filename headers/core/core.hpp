@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
 #include <sys/select.h> 
 
 #define CLIENT_DISCONNECTED -1
@@ -79,9 +80,13 @@ namespace WS { namespace Core
       */
     void  sendMsg(int socket_to_send, const char* msg, int msg_size) const;
 
+    /* @brief Close all listening sockets
+      */
+    void  closeListeningSockets() const;
+
   private:
 
-    int                   socket_;
+    std::vector<int>      listening_socket_; // mb change on simple int*
     fd_set                master_set_;
     const Config::Config  conf_;
 

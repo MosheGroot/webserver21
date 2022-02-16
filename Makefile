@@ -1,6 +1,6 @@
 NAME		:= webserv
 
-CC			:= clang++
+CC			:= c++
 CFLAGS		:= -Wall -Wextra -Werror -std=c++98
 DEP_FLAGS	:= -MP -MMD
 
