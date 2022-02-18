@@ -11,6 +11,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <unistd.h> // only for close() [very fckng inconvenient]
+#include <errno.h>
 
 #include <stdlib.h> // remove // atoi
 
@@ -18,15 +19,14 @@ namespace WS { namespace Core
 {
   
   Server  Server::instance_;
-  Server&  Server::getInstance() { return instance_; }
 
   void  Server::init(const char* config_path)
   {
-    std::stringstream ss;
-
-    WS::Config::Parser::parsFile(config_path, const_cast<Config::Config&>(conf_));
+    // Config
+    WS::Config::Parser::parseFile(config_path, const_cast<Config::Config&>(conf_));
     WS::Utils::Debug::printConf(conf_); // < DEBUG
 
+    // Sockets
     FD_ZERO(&master_set_);
 
     listening_socket_.reserve(conf_.server_list.size());

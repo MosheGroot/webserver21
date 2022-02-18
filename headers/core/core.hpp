@@ -26,8 +26,6 @@ namespace WS { namespace Core
     Server& operator=(const Server&) { return *this; }
 
   public:
-
-    static Server &  getInstance();
     
     /* @brief Server initialization.
       *  @exception std::exception  Throws when function fails 
@@ -41,13 +39,6 @@ namespace WS { namespace Core
       */
     int     run(void);
     
-    /* @brief Preparing Server before work
-      *         (set up logger, read config, add thread poll and etc.)
-      *  @exception std::exception  Throws when configuration fails 
-      *                             (check error message)
-      */    
-    void    configure(void); // ?
-
   private:
 
     /* @brief Tells if the socket is a listening socket
