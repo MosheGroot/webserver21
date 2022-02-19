@@ -12,7 +12,7 @@ int main(int argc, const char *argv[])
   try
   {
     WS::Utils::Logger::init(WS::Utils::Logger::LOGLEV_DEBUG, true);
-    WS::Core::Server& server = WS::Core::Server::getInstance();
+    WS::Core::Server& server = WS::Core::Server::instance_;
 
     server.init(config_path);
     server.run();
