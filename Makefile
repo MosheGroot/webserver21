@@ -1,6 +1,6 @@
 NAME		:= webserv
 
-CC			:= clang++
+CC			:= c++
 CFLAGS		:= -Wall -Wextra -Werror -std=c++98
 DEP_FLAGS	:= -MP -MMD
 
@@ -26,13 +26,8 @@ HDRS_DIRS	:= $(addprefix headers, \
 					) \
 				)
 
-
 vpath %.cpp	$(SRCS_DIRS)
 vpath %.hpp	$(HDRS_DIRS)
-
-# why need HDRS?
-# HDRS		:= Example1.class.hpp \
-# 			example2.hpp
 
 SRCS		:=  main.cpp \
 				$(addprefix config/, \
@@ -48,9 +43,9 @@ SRCS		:=  main.cpp \
 					logger.cpp \
 					file.cpp \
 					debug.cpp \
-          time.cpp \
+					time.cpp \
 					string.cpp \
-				) 
+				)
 				# $(addprefix example_dir/,
 				#	 example1.cpp,
 				#	 example2.cpp

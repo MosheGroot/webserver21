@@ -103,7 +103,7 @@ namespace WS { namespace Config
     out.location_list.push_back(new_location);
   }
 
-  void              Parser::parsFile(const char *filename, Config &out) 
+  void              Parser::parseFile(const char *filename, Config &out) 
   {
     std::ifstream   conffile(filename);
     std::string     data;
