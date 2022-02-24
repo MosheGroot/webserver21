@@ -1,4 +1,3 @@
-#include <iostream>
 #include "../../headers/utils/string.hpp"
 
 namespace Utils
@@ -68,4 +67,33 @@ namespace Utils
 
     return result;
   }
+
+  std::vector<std::string>   String::splitStr(std::string line) 
+  {
+    std::vector<std::string> result;
+    std::string buffer = "";
+    int len = (int)line.length();
+
+    for (int i = 0; i < len; i++)
+    {
+      if (line[i] != ' ')
+        buffer += line[i];
+      if ((line[i] == ' ' && buffer.size() > 0) || i == len -1)
+      {
+        result.push_back(buffer);
+        buffer = "";
+      }
+    }
+    return result;
+  }
+
+  template <typename T>
+  std::string                 to_string(T data)
+  {
+    std::ostringstream result;
+
+    result << data;
+    return result.str();
+  }
+
 } //!namespace Utils

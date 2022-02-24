@@ -29,7 +29,7 @@ namespace WS { namespace Config
     while(!conffile.eof())
     {
       getline(conffile, data);
-      result = splitStr(data);
+      result = Utils::String::splitStr(data);
       int len = (int)result.size();
       if (result[0] == "listen" && len == 2)
         new_server.ip_addr = result[1];
@@ -77,7 +77,7 @@ namespace WS { namespace Config
       getline(conffile, data);
       if (data.size() == 0)
         break;
-      result = splitStr(data);
+      result = Utils::String::splitStr(data);
       int len = (int)result.size();
       if (result[0] == "method" && len > 1)
       {
@@ -114,7 +114,7 @@ namespace WS { namespace Config
     conffile.close();
   }
 
-  std::vector<std::string>   Parser::splitStr(std::string line) 
+  std::vector<std::string>   Utils::String::splitStr(std::string line) 
   {
     std::vector<std::string> result;
     std::string buffer = "";
