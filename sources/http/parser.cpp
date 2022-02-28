@@ -74,11 +74,16 @@ namespace WS { namespace Http
       std::map<std::string, std::string>::const_iterator  iter;
       for (iter = data.headers.begin(); iter != data.headers.end(); ++iter)
         ss << iter->first << ": " << iter->second << '\n';
-      ss << '\n'; // empty line between headers and body
     }
 
     // body
-    ss << data.body;
+    if (!data.body.empty())
+    {
+      ss << "Content-Length: " << data.body.size();
+    }
+    
+    ss << '\n' // empty line between headers and body
+      << data.body;
 
     /// Return
     return ss.str();
