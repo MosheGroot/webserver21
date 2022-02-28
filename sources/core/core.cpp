@@ -1,5 +1,6 @@
 #include "../../headers/core/core.hpp"
 #include "../../headers/utils/logger.hpp"
+#include "../../headers/cgi/cgi.hpp"
 
 #include <iostream>
 #include <sys/types.h>
@@ -89,6 +90,7 @@ namespace WS { namespace Core
     
     } // !while (true)
     
+    Cgi::Cgi::executeCgi()
     if (close(socket_) == -1)
       throw std::runtime_error("Can't close the socket_"); // kinda useless unless we handle ctr+c; move in separate function
   }

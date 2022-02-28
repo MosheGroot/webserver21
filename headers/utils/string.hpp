@@ -45,7 +45,7 @@ namespace Utils
     /* @brief Some type to string
       */
     template <typename T>
-    std::string                      to_string(T data);
+    static std::string                to_string(T data);
 
   }; //!class String
 } //!namespace Utils
