@@ -99,6 +99,15 @@ namespace WS { namespace Http
     throw std::invalid_argument("unsupported HTTP method");
   }
 
+  std::string Parser::methodToString(Method method)
+  {
+    if (method == GET) return "GET";
+    if (method == POST) return "POST";
+    if (method == DELETE) return "DELETE";
+
+    throw std::invalid_argument("unsupported HTTP method");
+  }
+
   std::string Parser::statusToString(StatusCode status_code)
   {
     if (status_code == Continue)            return "100 Continue";

@@ -14,6 +14,7 @@ namespace WS { namespace Core
   private:
     RequestHandler() {}
 
+  /// General
   public:
     /* @brief Handle one request from specific ip and port
 
@@ -45,11 +46,16 @@ namespace WS { namespace Core
 
     /* @brief Creates response with error page specified in server's config 
     */
-    static const std::string              createErrorResponse(int error_code,
+    static const std::string              createErrorResponse(Http::StatusCode code,
                                                               const Http::Request& request, 
                                                               const Config::ServerConfig& server);
 
 
+  /// Utils
+    static bool   methodIsAllowed(const Http::Request& request, const Config::ServerLocation& location);
+
+
+  /// Exceptions
   public:
     /* @brief Exception if location not found
     */

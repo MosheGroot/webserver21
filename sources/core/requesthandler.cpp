@@ -5,6 +5,8 @@
 
 namespace WS { namespace Core {
 
+  /// General
+
   std::string  RequestHandler::handle(const std::string& raw_request, 
                                       const std::string& ip, 
                                       const std::string& port, 
@@ -88,25 +90,34 @@ namespace WS { namespace Core {
                                                                 const Config::ServerConfig& server,
                                                                 const Config::ServerLocation& location)
   {
-    (void)request;
-    (void)server;
-    (void)location;
+    if (!methodIsAllowed(request, location))
+      return RequestHandler::createErrorResponse(Http::MethodNotAllowed, request, server);
 
-    return server.port;
+    return "";
   }
 
   
-  const std::string             RequestHandler::createErrorResponse(int error_code, 
+  const std::string             RequestHandler::createErrorResponse(Http::StatusCode code,
                                                                 const Http::Request& request, 
                                                                 const Config::ServerConfig& server)
   {
-    (void)error_code;
-    (void)request;
-    (void)server;
+    Utils::Logger::error(request.headers.at("Host") + request.uri + ": " + Http::Parser::statusToString(code));
 
-    return "ERROR";
+    Http::Response  response;
+    response.status_code = code;
+
+    return Http::Parser::serializeResponse(response);
   }
 
+  /// Utils
+  bool   RequestHandler::methodIsAllowed(const Http::Request& request, const Config::ServerLocation& location)
+  {
+    return (std::find(location.method.begin(), location.method.end(),
+      Http::Parser::methodToString(request.method)) != location.method.end());
+  }
+
+
+  /// Exceptions
 
   const char        *RequestHandler::ServerNotFoundException::what() const throw()
   {
