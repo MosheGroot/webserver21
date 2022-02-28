@@ -19,18 +19,26 @@ namespace WS { namespace Core
 
       @return Serialized response
     */
+<<<<<<< HEAD
     static std::string  handle(const std::string& raw_request, 
                                 const std::string& ip, 
                                 const std::string& port, 
                                 const Config::Config& conf);
+=======
+    static std::string  handle(const std::string& request, const std::string& ip, const std::string& port);
+>>>>>>> 7eead6099a7f863458bdc51a17d844c0329ed728
 
   private:
     /* @brief Select server from global config for specified client's request
     */
     static const Config::ServerConfig&    selectServer(const Http::Request& request,
                                                         const std::string& ip,
+<<<<<<< HEAD
                                                         const std::string& port,
                                                         const Config::Config& conf);
+=======
+                                                        const std::string& port);
+>>>>>>> 7eead6099a7f863458bdc51a17d844c0329ed728
 
     /* @brief Select location from targeted server for specified client's request
     */
@@ -43,6 +51,7 @@ namespace WS { namespace Core
                                                           const Config::ServerConfig& server,
                                                           const Config::ServerLocation& location);
 
+<<<<<<< HEAD
     /* @brief Creates response with error page specified in server's config 
     */
     static const std::string              createErrorResponse(int error_code,
@@ -62,5 +71,7 @@ namespace WS { namespace Core
       virtual const char  *what() const throw();
     };
 
+=======
+>>>>>>> 7eead6099a7f863458bdc51a17d844c0329ed728
   }; //!class RequestHandler
 }} //!namespace WS::Core
