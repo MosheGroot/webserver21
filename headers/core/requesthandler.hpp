@@ -49,6 +49,7 @@ namespace WS { namespace Core
                                                               const Http::Request& request, 
                                                               const Config::ServerConfig& server);
 
+
   public:
     /* @brief Exception if location not found
     */

@@ -26,14 +26,14 @@ namespace WS { namespace Utils
       @param path Path with directory(-ies) to create\
       @param mode Mode for created directories
     */
-    static void         createPath(const char* path, mode_t mode = 0700);
+    static void         createPath(const char* path, __mode_t mode = 0700);
 
     /* @brief Create single directory given as `dir`
 
       @param dir  Path to directory to create
       @param mode Mode for created dir
     */
-    static void         createDir(const char* dir, mode_t mode = 0700);
+    static void         createDir(const char* dir, __mode_t mode = 0700);
 
   }; //!class File
 }} //!namespace WS::Utils

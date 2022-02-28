@@ -34,7 +34,9 @@ namespace WS { namespace Http
 
 
   private:
-    static Method  stringToMethod(const std::string& source);
+    static Method       stringToMethod(const std::string& source);
+    static std::string  statusToString(StatusCode status_code);
+
 
   }; //!class Parser
 }} //!namespace WS::Http

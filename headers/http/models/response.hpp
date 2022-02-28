@@ -3,6 +3,8 @@
 #include <string>
 #include <stdint.h>
 
+#include "codes.hpp"
+
 namespace WS { namespace Http
 {
   /* @brief Http response class
@@ -14,9 +16,8 @@ namespace WS { namespace Http
 
   public:
     // start-line
-    std::string version;        //> http version of response
-    uint16_t    status_code;    //> status code of response
-    std::string status_text;    //> reason phrase of response
+    std::string   version;        //> http version of response
+    StatusCode    status_code;    //> status code of response
 
     // headers
     std::map<std::string, std::string>  headers;    //> full list of headers

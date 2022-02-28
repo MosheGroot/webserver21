@@ -67,8 +67,7 @@ namespace WS { namespace Http
     /// Serialize
     // start-line
     ss << data.version << ' '
-      << data.status_code << ' '
-      << data.status_text << '\n';
+      << Parser::statusToString(data.status_code) << '\n';
 
     // headers
     {
@@ -86,13 +85,36 @@ namespace WS { namespace Http
   }
 
 
-  Method    Parser::stringToMethod(const std::string& source)
+  Method      Parser::stringToMethod(const std::string& source)
   {
     if (source == "GET") return GET;
     if (source == "POST") return POST;
     if (source == "DELETE") return DELETE;
 
     throw std::invalid_argument("unsupported HTTP method");
+  }
+
+  std::string Parser::statusToString(StatusCode status_code)
+  {
+    if (status_code == Continue)            return "100 Continue";
+    if (status_code == Continue)            return "100 Continue";
+    if (status_code == Processing)          return "102 Processing";
+    if (status_code == Ok)                  return "200 OK";
+    if (status_code == Created)             return "201 Created";
+    if (status_code == Accepted)            return "202 Accepted";
+    if (status_code == NoContent)           return "204 No Content";
+    if (status_code == MovedPermanently)    return "301 Moved Permanently";
+    if (status_code == BadRequest)          return "400 Bad Request";
+    if (status_code == Forbidden)           return "403 Forbidden";
+    if (status_code == NotFound)            return "404 Not Found";
+    if (status_code == MethodNotAllowed)    return "405 Method Not Allowed";
+    if (status_code == RequestTimeout)      return "408 Request Timeout";
+    if (status_code == LengthRequired)      return "411 Length Required";
+    if (status_code == PayloadTooLarge)     return "413 Payload Too Large";
+    if (status_code == InternalServerError) return "500 Internal Server Error";
+    if (status_code == NotImplemented)      return "501 Not Implemented";
+    
+    throw std::invalid_argument("unsupported status code");
   }
 
 }} //!namespace WS::Http

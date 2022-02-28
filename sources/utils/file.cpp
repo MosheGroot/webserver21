@@ -6,6 +6,9 @@
 #include <string.h>
 #include <stdexcept>
 
+#include <fstream>
+#include <sstream>
+
 #include "../../headers/utils/file.hpp"
 
 namespace WS { namespace Utils
@@ -13,14 +16,16 @@ namespace WS { namespace Utils
 
   std::string File::readFile(const char *filename)
   {
-    // TODO
-    (void)filename; // delete after TODO (unused parameter warning)
+    std::ifstream file(filename);
 
-    return "";
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+
+    return buffer.str();
   }
 
 
-  void  File::createPath(const char* path, mode_t mode)
+  void  File::createPath(const char* path, __mode_t mode)
   {
     // make duplicate
     char *copypath = strdup(path);
@@ -48,7 +53,7 @@ namespace WS { namespace Utils
   }
 
 
-  void  File::createDir(const char* dir, mode_t mode)
+  void  File::createDir(const char* dir, __mode_t mode)
   {
     struct stat   st;
 

@@ -4,8 +4,7 @@
 #include <vector>
 #include <exception>
 
-namespace Utils
-{
+namespace WS { namespace Utils {
   /* @brief Static class for String processing
   */
   class String
@@ -37,4 +36,4 @@ namespace Utils
     static std::vector<std::string>  splitOnce(const std::string& source, char delim);
 
   }; //!class String
-} //!namespace Utils
+}} //!namespace WS::Utils

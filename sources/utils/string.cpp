@@ -1,8 +1,7 @@
 #include <iostream>
 #include "../../headers/utils/string.hpp"
 
-namespace Utils
-{
+namespace WS { namespace Utils {
   std::vector<std::string>  String::split(const std::string& source, const std::string& delim)
   {
     std::vector<std::string> result;
@@ -68,4 +67,4 @@ namespace Utils
 
     return result;
   }
-} //!namespace Utils
+}} //!namespace WS::Utils
