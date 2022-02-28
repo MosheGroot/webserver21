@@ -132,7 +132,7 @@ namespace WS { namespace Core
 
   void  Server::handleConnection(int client_socket, fd_set& writefds)
   {
-    if (recvMsg(client_socket) != CLIENT_DISCONNECTED && FD_ISSET(client_socket, &writefds)) //?
+    if (recvMsg(client_socket) != CLIENT_DISCONNECTED && FD_ISSET(client_socket, &writefds)) //?z
       sendMsg(client_socket, "Message has been recieved!\n", sizeof("Message has been recieved!\n"));
   }
 

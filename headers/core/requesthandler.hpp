@@ -19,14 +19,18 @@ namespace WS { namespace Core
 
       @return Serialized response
     */
-    static std::string  handle(const std::string& request, const std::string& ip, const std::string& port);
+    static std::string  handle(const std::string& raw_request, 
+                                const std::string& ip, 
+                                const std::string& port, 
+                                const Config::Config& conf);
 
   private:
     /* @brief Select server from global config for specified client's request
     */
     static const Config::ServerConfig&    selectServer(const Http::Request& request,
                                                         const std::string& ip,
-                                                        const std::string& port);
+                                                        const std::string& port,
+                                                        const Config::Config& conf);
 
     /* @brief Select location from targeted server for specified client's request
     */
@@ -38,6 +42,25 @@ namespace WS { namespace Core
     static const std::string              createResponse(const Http::Request& request, 
                                                           const Config::ServerConfig& server,
                                                           const Config::ServerLocation& location);
+
+    /* @brief Creates response with error page specified in server's config 
+    */
+    static const std::string              createErrorResponse(int error_code,
+                                                              const Http::Request& request, 
+                                                              const Config::ServerConfig& server);
+
+  public:
+    /* @brief Exception if location not found
+    */
+    struct	ServerNotFoundException: public std::exception {
+      virtual const char  *what() const throw();
+    };
+
+    /* @brief Exception if location not found
+    */
+    struct	LocationNotFoundException: public std::exception {
+      virtual const char  *what() const throw();
+    };
 
   }; //!class RequestHandler
 }} //!namespace WS::Core
