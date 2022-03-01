@@ -39,7 +39,13 @@ namespace WS { namespace Utils
     */
     static bool         isDir(const char *path);
 
+    /* @brief Check is file exists
+    */
     static bool         fileExists(const char *path);
     
+    /* @brief Get current work directory (exec pwd)
+    */
+    static std::string  getCurrentDir(void);
+
   }; //!class File
 }} //!namespace WS::Utils

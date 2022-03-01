@@ -35,5 +35,10 @@ namespace WS { namespace Utils {
     */
     static std::vector<std::string>  splitOnce(const std::string& source, char delim);
 
+
+    /* @brief Convert entire string to lowercase (ASCII only)
+    */
+    static std::string  toLower(std::string text);
+
   }; //!class String
 }} //!namespace WS::Utils

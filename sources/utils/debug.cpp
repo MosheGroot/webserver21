@@ -21,8 +21,6 @@ namespace WS { namespace Utils {
       std::cout << std::endl;
 
       std::cout << "port            " << conf.server_list[i].port << '\n';
-      std::cout << "root            " << conf.server_list[i].root << '\n';
-      std::cout << "autoindex       " << conf.server_list[i].autoindex << '\n';
       std::cout << "buff_size_body  " << conf.server_list[i].buff_size_body << '\n';
       
       std::map<Http::StatusCode, std::string>::const_iterator it;

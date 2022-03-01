@@ -60,28 +60,35 @@ namespace WS { namespace Core
 
 
   /// Methods
-    static Http::Response           responseFromGet(const Http::Request& request, 
+    static Http::Response           responseFromGet(const std::string& absolute_path,
+                                                      const Http::Request& request, 
                                                       const Config::ServerConfig* server,
                                                       const Config::ServerLocation* location);
 
-    static Http::Response           responseFromPost(const Http::Request& request, 
+    static Http::Response           responseFromPost(const std::string& absolute_path,
+                                                      const Http::Request& request, 
                                                       const Config::ServerConfig* server,
                                                       const Config::ServerLocation* location);
 
-    static Http::Response           responseFromDelete(const Http::Request& request, 
+    static Http::Response           responseFromDelete(const std::string& absolute_path,
+                                                        const Http::Request& request, 
                                                         const Config::ServerConfig* server,
                                                         const Config::ServerLocation* location);
 
   /// Index
+    static Http::Response   responseFromLocationIndex(const std::string& absolute_path,
+                                                      const Config::ServerLocation* location);
+
     static Http::Response   responseFromAutoIndex(std::string absolute_path);
 
 
   /// Utils
     static std::string  getAbsolutePath(const Http::Request& request,
-                                          const Config::ServerConfig* server,
                                           const Config::ServerLocation* location);
 
-    static bool   methodIsAllowed(const Http::Request& request, const Config::ServerLocation& location);
+    static bool         methodIsAllowed(const Http::Request& request, const Config::ServerLocation& location);
+
+    static std::string  getContentType(const std::string& content_extention);
 
   }; //!class RequestHandler
 }} //!namespace WS::Core

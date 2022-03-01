@@ -1,4 +1,5 @@
-#include <iostream>
+#include <cctype>
+
 #include "../../headers/utils/string.hpp"
 
 namespace WS { namespace Utils {
@@ -67,4 +68,13 @@ namespace WS { namespace Utils {
 
     return result;
   }
+
+  std::string  String::toLower(std::string text)
+  {
+    for (size_t i = 0; i < text.size(); ++i)
+      text[i] = ::tolower(text[i]);
+    
+    return text;
+  }
+
 }} //!namespace WS::Utils

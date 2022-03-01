@@ -85,4 +85,12 @@ namespace WS { namespace Utils
     return (stat(path, &buff) == 0);
   }
 
+  std::string   File::getCurrentDir(void)
+  {
+    char pwd[1024];
+
+    getcwd(pwd, 1024);
+    return pwd;
+  }
+  
 }} //!namespace WS::Utils

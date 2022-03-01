@@ -47,6 +47,7 @@ SRCS		:=  main.cpp \
 					debug.cpp \
 					time.cpp \
 					string.cpp \
+					exception.cpp \
 				)
 				# $(addprefix example_dir/,
 				#	 example1.cpp,

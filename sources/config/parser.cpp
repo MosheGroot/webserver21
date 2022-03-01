@@ -1,4 +1,5 @@
 #include "../../headers/config/config.hpp"
+#include "../../headers/utils/string.hpp"
 
 #include <cstdlib>
 
@@ -42,12 +43,6 @@ namespace WS { namespace Config
       }
       else if (result[0] == "port" && len == 2)
         new_server.port = result[1];
-      else if (result[0] == "root" && len == 2)
-        new_server.root = result[1];
-      else if (result[0] == "index" && len == 2)
-        new_server.index = result[1];
-      else if (result[0] == "autoindex" && len == 2)
-        new_server.autoindex = result[1];
       else if (result[0] == "buff_size_body" && len == 2)
         new_server.buff_size_body = result[1];
       else if (result[0] == "error_page")
@@ -96,7 +91,16 @@ namespace WS { namespace Config
       else if (result[0] == "root" && len == 2)
         new_location.root = result[1];
       else if (result[0] == "index" && len == 2)
-        new_location.index = result[1];
+        new_location.index.push_back(result[1]);
+      else if (result[0] == "autoindex" && len == 2)
+      {
+        result[1] = Utils::String::toLower(result[1]);
+
+        if (result[1] != "on" && result[1] != "off")
+          throw WrongConfigException();
+
+        new_location.autoindex = result[1];
+      }
       else if (result[0] == "location" && len == 2)
       {
         out.location_list.push_back(new_location);
@@ -109,6 +113,10 @@ namespace WS { namespace Config
       else
         throw WrongConfigException();
     }
+
+    if (new_location.autoindex == "")
+      new_location.autoindex = "on";
+
     out.location_list.push_back(new_location);
   }
 
