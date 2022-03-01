@@ -6,6 +6,7 @@
 
 #define CLIENT_DISCONNECTED -1
 
+#include "./requesthandler.hpp"
 #include "../../headers/config/config.hpp"
 
 namespace WS { namespace Core

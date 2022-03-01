@@ -124,14 +124,14 @@ namespace WS { namespace Core {
     {
       // redirect to error page
       // TODO
-      return createErrorResponse(Http::NotImplemented, request, server);
+      response.body = PageGenerator::generateErrorPage(Http::Parser::statusToString(code));
     }
     else
     {
       // default error page
       response.body = PageGenerator::generateErrorPage(Http::Parser::statusToString(code));
     }
-    
+
     return response;
   }
 

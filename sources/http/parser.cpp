@@ -12,8 +12,6 @@ namespace WS { namespace Http
 
     // split headers and body
     std::vector<std::string>  splitted_request = Utils::String::splitOnce(data, "\n\n");
-    if (splitted_request.size() != 2)
-      throw std::invalid_argument("missing empty line after headers");
 
     // split start-line and headers
     std::vector<std::string>  splitted_raw_headers = Utils::String::split(
@@ -52,7 +50,11 @@ namespace WS { namespace Http
     // body
     {
       if (request.method == POST)
+      {
+        if (splitted_request.size() <= 1)
+          throw std::invalid_argument("missing empty line after headers");
         request.body = splitted_request[1];
+      }
     }
 
     /// Return
