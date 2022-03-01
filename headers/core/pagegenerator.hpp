@@ -18,11 +18,15 @@ namespace WS { namespace Core {
   public:
     /* @brief Generate error page with specified error code
     */
-    static std::string  generateErrorPage(const std::string& error_message);
+    static std::string  generateErrorPage(const std::string& error_message, const char *error_page_path=NULL);
 
     /* @brief Generate default page
     */
     static std::string  generateDefaultPage(void);
+
+    /* @brief Generate default page
+    */
+    static std::string  generateIndexPage(std::string path);
   };
 
 }} //!namespace WS::Core

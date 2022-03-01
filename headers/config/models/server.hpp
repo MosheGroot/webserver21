@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "./location.hpp"
+#include "../../http/http.hpp"
 
 namespace WS { namespace Config
 {
@@ -20,7 +21,7 @@ namespace WS { namespace Config
 
     std::string root;
     std::string index;
-    std::string error_page;
+    std::map<Http::StatusCode, std::string> error_page;
     
     std::string autoindex;
     std::string buff_size_body;

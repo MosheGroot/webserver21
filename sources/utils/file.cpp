@@ -68,4 +68,21 @@ namespace WS { namespace Utils
     }
   }
 
+
+  bool   File::isDir(const char *path)
+  {
+    struct stat st;
+
+    stat(path, &st);
+    return S_ISDIR(st.st_mode) != 0;
+  }
+
+
+  bool  File::fileExists(const char *path)
+  {
+    struct stat buff;
+
+    return (stat(path, &buff) == 0);
+  }
+
 }} //!namespace WS::Utils

@@ -35,5 +35,11 @@ namespace WS { namespace Utils
     */
     static void         createDir(const char* dir, __mode_t mode = 0700);
 
+    /* @brief Check if path is a directory
+    */
+    static bool         isDir(const char *path);
+
+    static bool         fileExists(const char *path);
+    
   }; //!class File
 }} //!namespace WS::Utils

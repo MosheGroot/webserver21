@@ -1,5 +1,7 @@
 #include "../../headers/config/config.hpp"
 
+#include <cstdlib>
+
 namespace WS { namespace Config
 {
   void              Parser::parseConfig(std::ifstream& conffile, Config &out)
@@ -48,8 +50,15 @@ namespace WS { namespace Config
         new_server.autoindex = result[1];
       else if (result[0] == "buff_size_body" && len == 2)
         new_server.buff_size_body = result[1];
-      else if (result[0] == "error_page" && len == 2)
-        new_server.error_page = result[1];
+      else if (result[0] == "error_page")
+      {
+        const std::string& error_page_uri = result[result.size() - 1];
+
+        for (size_t i = 1; i < result.size() - 1; ++i)
+        new_server.error_page.insert(std::make_pair(
+          static_cast<Http::StatusCode>(atoi(result[i].c_str())),
+          error_page_uri));
+      }
       else if (result[0] == "location" && len == 2)
       {
         parseServerLocation(conffile, new_server, result[1]);

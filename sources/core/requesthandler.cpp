@@ -1,4 +1,5 @@
 #include "../../headers/core/requesthandler.hpp"
+#include "../../headers/core/pagegenerator.hpp"
 #include "../../headers/utils/logger.hpp"
 
 #include <algorithm>
@@ -6,7 +7,6 @@
 namespace WS { namespace Core {
 
   /// General
-
   std::string  RequestHandler::handle(const std::string& raw_request, 
                                       const std::string& ip, 
                                       const std::string& port, 
@@ -18,30 +18,26 @@ namespace WS { namespace Core {
 
     try
     {
-      server = &RequestHandler::selectServer(request, ip, port, conf);  
-      location = &RequestHandler::selectLocation(request, *server);
+      server = RequestHandler::selectServer(request, ip, port, conf);
+      if (server)
+        location = RequestHandler::selectLocation(request, *server);
 
-      return RequestHandler::createResponse(request, *server, *location);
-    }
-    catch(const RequestHandler::ServerNotFoundException& e)
-    {
-      Utils::Logger::error(e.what());
-      return RequestHandler::createErrorResponse(404, request, *server);
-    }
-    catch(const RequestHandler::LocationNotFoundException& e)
-    {
-      Utils::Logger::error(e.what());
-      return RequestHandler::createErrorResponse(404, request, *server);
+      return Http::Parser::serializeResponse(
+        RequestHandler::createResponse(request, server, location)
+      );
     }
     catch(const std::exception& e)
     {
       Utils::Logger::error(e.what());
-      return RequestHandler::createErrorResponse(500, request, *server);
+      return Http::Parser::serializeResponse(
+        RequestHandler::createErrorResponse(Http::InternalServerError, request, server)
+      );
     }
   }
 
 
-  const Config::ServerConfig&   RequestHandler::selectServer(const Http::Request& request,
+  /// Select
+  const Config::ServerConfig*   RequestHandler::selectServer(const Http::Request& request,
                                                               const std::string& ip,
                                                               const std::string& port,
                                                               const Config::Config& conf)
@@ -58,20 +54,17 @@ namespace WS { namespace Core {
           curr.server_name.begin(), curr.server_name.end(), request.headers.at("Host"));
 
         if (res != curr.server_name.end())
-          return curr;
+          return &curr;
         if (!default_server)
           default_server = &curr;
       }  
     }
 
-    if (!default_server)
-      throw RequestHandler::ServerNotFoundException();
-
-    return (*default_server);
+    return (default_server);
   }
 
 
-  const Config::ServerLocation& RequestHandler::selectLocation(const Http::Request& request,
+  const Config::ServerLocation* RequestHandler::selectLocation(const Http::Request& request,
                                                                 const Config::ServerConfig& server)
   {
     for (size_t i = 0; i < server.location_list.size(); ++i)
@@ -79,54 +72,144 @@ namespace WS { namespace Core {
       const Config::ServerLocation& curr = server.location_list[i];
 
       if (curr.path == request.uri)
-        return curr;
+        return &curr;
     }
 
-    throw RequestHandler::LocationNotFoundException();
+    return NULL;
   }
 
 
-  const std::string             RequestHandler::createResponse(const Http::Request& request, 
-                                                                const Config::ServerConfig& server,
-                                                                const Config::ServerLocation& location)
+  /// Response
+  Http::Response             RequestHandler::createResponse(const Http::Request& request, 
+                                                                const Config::ServerConfig* server,
+                                                                const Config::ServerLocation* location)
   {
-    if (!methodIsAllowed(request, location))
+    if (location && !methodIsAllowed(request, *location))
       return RequestHandler::createErrorResponse(Http::MethodNotAllowed, request, server);
 
-    return "";
+    Http::Response response;
+    if (request.method == Http::GET)
+      response = responseFromGet(request, server, location);
+    else if (request.method == Http::POST)
+      response = responseFromPost(request, server, location);
+    else if (request.method == Http::DELETE)
+      response = responseFromDelete(request, server, location);
+    
+    return response;
   }
 
-  
-  const std::string             RequestHandler::createErrorResponse(Http::StatusCode code,
+
+  Http::Response             RequestHandler::createErrorResponse(Http::StatusCode code,
                                                                 const Http::Request& request, 
-                                                                const Config::ServerConfig& server)
+                                                                const Config::ServerConfig* server)
   {
     Utils::Logger::error(request.headers.at("Host") + request.uri + ": " + Http::Parser::statusToString(code));
 
     Http::Response  response;
+    response.version = "HTTP/1.1";
     response.status_code = code;
 
-    return Http::Parser::serializeResponse(response);
+    if (server && server->error_page.find(code) != server->error_page.end())
+    {
+      // redirect to error page
+      
+    }
+    else
+    {
+      // default error page
+      response.body = PageGenerator::generateErrorPage(Http::Parser::statusToString(code));
+    }
+    
+    return response;
+  }
+
+
+  Http::Response             RequestHandler::createDefaultPageResponse()
+  {
+    Http::Response  response;
+    response.version = "HTTP/1.1";
+    response.status_code = Http::Ok;
+    
+    response.body = PageGenerator::generateDefaultPage();
+
+    return response;
+  }
+
+
+  /// Methods
+
+  Http::Response    RequestHandler::responseFromGet(const Http::Request& request, 
+                                                      const Config::ServerConfig* server,
+                                                      const Config::ServerLocation* location)
+  {
+    (void)request;
+    (void)server;
+    (void)location;
+
+    if (!server)
+      return createDefaultPageResponse();
+    return Http::Response();
+  }
+
+  Http::Response    RequestHandler::responseFromPost(const Http::Request& request, 
+                                                      const Config::ServerConfig* server,
+                                                      const Config::ServerLocation* location)
+  {
+    (void)request;
+    (void)server;
+    (void)location;
+    return Http::Response();
+  }
+
+  Http::Response    RequestHandler::responseFromDelete(const Http::Request& request, 
+                                                        const Config::ServerConfig* server,
+                                                        const Config::ServerLocation* location)
+  {
+    (void)request;
+    (void)server;
+    (void)location;
+    return Http::Response();
+  }
+
+  /// Index
+  Http::Response    RequestHandler::responseFromAutoIndex(std::string absolute_path)
+  {
+    Http::Response  response;
+
+    response.version = "HTTP/1.1";
+    response.status_code = Http::Ok;
+    
+    response.body = PageGenerator::generateIndexPage(absolute_path);
+    response.headers.insert(std::make_pair("Content-Type", "text/html"));
+    
+    return response;
   }
 
   /// Utils
-  bool   RequestHandler::methodIsAllowed(const Http::Request& request, const Config::ServerLocation& location)
+  std::string RequestHandler::getAbsolutePath(const Http::Request& request,
+                                              const Config::ServerConfig* server,
+                                              const Config::ServerLocation* location)
+  {
+    // location with root
+    if (location && !location->root.empty())
+    {
+      // std::string subpath = request.uri.substr(request.uri.find(location->path) + );
+
+      // return location->root + subpath;
+    }
+
+    // server with root
+    if (server && !server->root.empty())
+      return server->root + request.uri;
+    
+    // default ????
+    return request.uri;
+  }
+
+  bool        RequestHandler::methodIsAllowed(const Http::Request& request, const Config::ServerLocation& location)
   {
     return (std::find(location.method.begin(), location.method.end(),
       Http::Parser::methodToString(request.method)) != location.method.end());
-  }
-
-
-  /// Exceptions
-
-  const char        *RequestHandler::ServerNotFoundException::what() const throw()
-  {
-    return "Exception thrown: could not find server for such request";
-  }
-
-  const char        *RequestHandler::LocationNotFoundException::what() const throw()
-  {
-    return "Exception thrown: could not find location for such request";
   }
 
 }} //!namespace WS::Core

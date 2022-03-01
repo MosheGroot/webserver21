@@ -14,8 +14,8 @@ namespace WS { namespace Core
   private:
     RequestHandler() {}
 
-  /// General
   public:
+  /// General
     /* @brief Handle one request from specific ip and port
 
       @return Serialized response
@@ -25,49 +25,63 @@ namespace WS { namespace Core
                                 const std::string& port, 
                                 const Config::Config& conf);
 
+
   private:
+  /// Select
     /* @brief Select server from global config for specified client's request
     */
-    static const Config::ServerConfig&    selectServer(const Http::Request& request,
+    static const Config::ServerConfig*    selectServer(const Http::Request& request,
                                                         const std::string& ip,
                                                         const std::string& port,
                                                         const Config::Config& conf);
 
     /* @brief Select location from targeted server for specified client's request
     */
-    static const Config::ServerLocation&  selectLocation(const Http::Request& request,
+    static const Config::ServerLocation*  selectLocation(const Http::Request& request,
                                                           const Config::ServerConfig& server);
 
+
+  /// Response
     /* @brief Creates response based on client's request for targeted server and location inside it
     */
-    static const std::string              createResponse(const Http::Request& request, 
-                                                          const Config::ServerConfig& server,
-                                                          const Config::ServerLocation& location);
+    static Http::Response      createResponse(const Http::Request& request, 
+                                              const Config::ServerConfig* server,
+                                              const Config::ServerLocation* location);
 
     /* @brief Creates response with error page specified in server's config 
     */
-    static const std::string              createErrorResponse(Http::StatusCode code,
-                                                              const Http::Request& request, 
-                                                              const Config::ServerConfig& server);
+    static Http::Response      createErrorResponse(Http::StatusCode code,
+                                                    const Http::Request& request, 
+                                                    const Config::ServerConfig* server);
+
+    /* @brief Creates response with default page  
+    */
+    static Http::Response      createDefaultPageResponse(void);
+
+
+  /// Methods
+    static Http::Response           responseFromGet(const Http::Request& request, 
+                                                      const Config::ServerConfig* server,
+                                                      const Config::ServerLocation* location);
+
+    static Http::Response           responseFromPost(const Http::Request& request, 
+                                                      const Config::ServerConfig* server,
+                                                      const Config::ServerLocation* location);
+
+    static Http::Response           responseFromDelete(const Http::Request& request, 
+                                                        const Config::ServerConfig* server,
+                                                        const Config::ServerLocation* location);
+
+  /// Index
+    static Http::Response   responseFromAutoIndex(std::string absolute_path);
 
 
   /// Utils
+    static std::string  getAbsolutePath(const Http::Request& request,
+                                          const Config::ServerConfig* server,
+                                          const Config::ServerLocation* location);
+
     static bool   methodIsAllowed(const Http::Request& request, const Config::ServerLocation& location);
-
-
-  /// Exceptions
-  public:
-    /* @brief Exception if location not found
-    */
-    struct	ServerNotFoundException: public std::exception {
-      virtual const char  *what() const throw();
-    };
-
-    /* @brief Exception if location not found
-    */
-    struct	LocationNotFoundException: public std::exception {
-      virtual const char  *what() const throw();
-    };
 
   }; //!class RequestHandler
 }} //!namespace WS::Core
