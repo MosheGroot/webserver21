@@ -11,11 +11,11 @@ namespace WS { namespace Http
       throw std::invalid_argument("empty request");
 
     // split headers and body
-    std::vector<std::string>  splitted_request = Utils::String::splitOnce(data, "\n\n");
+    std::vector<std::string>  splitted_request = Utils::String::splitOnce(data, "\r\n\r\n");
 
     // split start-line and headers
     std::vector<std::string>  splitted_raw_headers = Utils::String::split(
-      splitted_request[0], '\n');
+      splitted_request[0], "\r\n");
 
 
     /// Parsing
@@ -41,6 +41,12 @@ namespace WS { namespace Http
 
       while (headers_index < splitted_raw_headers.size())
       {
+        // clean up
+        size_t newline_index = splitted_raw_headers[headers_index].rfind("\r\n");
+        if (newline_index != std::string::npos)
+          splitted_raw_headers[headers_index].erase(newline_index, 1);
+
+        // insert
         splitted_header = Utils::String::split(splitted_raw_headers[headers_index], ": ");
         request.headers.insert(std::make_pair(splitted_header[0], splitted_header[1]));
         ++headers_index;
@@ -69,13 +75,13 @@ namespace WS { namespace Http
     /// Serialize
     // start-line
     ss << data.version << ' '
-      << Parser::statusToString(data.status_code) << '\n';
+      << Parser::statusToString(data.status_code) << "\r\n";
 
     // headers
     {
       std::map<std::string, std::string>::const_iterator  iter;
       for (iter = data.headers.begin(); iter != data.headers.end(); ++iter)
-        ss << iter->first << ": " << iter->second << '\n';
+        ss << iter->first << ": " << iter->second << "\r\n";
     }
 
     // body
@@ -84,7 +90,7 @@ namespace WS { namespace Http
       ss << "Content-Length: " << data.body.size();
     }
     
-    ss << '\n' // empty line between headers and body
+    ss << "\r\n" // empty line between headers and body
       << data.body;
 
     /// Return
