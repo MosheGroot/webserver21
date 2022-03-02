@@ -156,7 +156,7 @@ namespace WS { namespace Core
     ss << "#" << msg_owner << " Recieved: " << msg;
       Utils::Logger::instance_.info(ss.str());
 
-    std::string response = RequestHandler::handle(msg, "127.0.0.1", "8080", this->conf_);
+    std::string response = RequestHandler::handle(msg, "127.0.0.1", "8888", this->conf_);
 
     Utils::Logger::instance_.debug("SENDING RESPONSE");
     Utils::Logger::instance_.debug(response);

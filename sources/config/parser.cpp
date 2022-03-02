@@ -75,7 +75,10 @@ namespace WS { namespace Config
     std::string     data;
     std::vector<std::string>  result;
 
+    if (path[0] != '/')
+      throw WrongConfigException();
     new_location.path = path;
+    
     while(!conffile.eof())
     {
       getline(conffile, data);
@@ -89,7 +92,11 @@ namespace WS { namespace Config
           new_location.method.push_back(result[i]);
       }
       else if (result[0] == "root" && len == 2)
+      {
+        if (result[1][result[1].size() - 1] != '/')
+          result[1].push_back('/');
         new_location.root = result[1];
+      }
       else if (result[0] == "index" && len == 2)
         new_location.index.push_back(result[1]);
       else if (result[0] == "autoindex" && len == 2)

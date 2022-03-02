@@ -40,21 +40,26 @@ namespace WS { namespace Core {
     DIR *dir;
     struct dirent *entry;
 
+    Utils::Logger::debug(path);
     dir = opendir(path.c_str());
-    if (!dir) {
-      throw std::invalid_argument("Directory does not");
-    }
+    if (!dir)
+      throw std::invalid_argument("generateIndexPage exception: directory does not exists");
 
     if (path[path.size() - 1] != '/')
       path.push_back('/');
 
     std::stringstream out("autoindex.html");
-    out << "<!DOCTYPE html>"                         << '\n';
-    out << "<html>"                                  << '\n';
-    out << "<title> Index of " << path << "</title>" << '\n';
-    out << "<body>"                                  << '\n';
-    out << "<div>"                                   << '\n';
-    out << "<h1>Index of ";
+    out << "<!DOCTYPE html>\n"
+            "<html>\n"
+            "<style>\n"
+              "html { color-scheme: light dark; }\n"
+              "body { width: 35em; margin: 0 auto;\n"
+              "font-family: Tahoma, Verdana, Arial, sans-serif; }\n"
+            "</style>\n"
+           "<title> Index of " << path << "</title>\n"
+           "<body>\n"
+           "<div>\n"
+           "<h1>Index of ";
 
     std::string host_(path);
     out << path;
@@ -67,9 +72,9 @@ namespace WS { namespace Core {
         out << "/";
       out << "</a></p>" << '\n';
     }
-    out << "</div>"                                   << '\n';
-    out << "</body>"                                  << '\n';
-    out << "</html>"                                  << '\n';
+    out << "</div>\n" 
+           "</body>\n"
+           "</html>";
 
     closedir(dir);
     return out.str();

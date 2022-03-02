@@ -26,15 +26,18 @@ namespace WS { namespace Core {
     
     try
     {
-      server = RequestHandler::selectServer(request, ip, port, conf);
-      if (!server) // imposible, but...
+      if (conf.server_list.size() == 0)
       {
         response = RequestHandler::createDefaultPageResponse();
       }
       else
       {
-        location = RequestHandler::selectLocation(request, *server);      
-        response = RequestHandler::createResponse(request, server, location);
+        server = RequestHandler::selectServer(request, ip, port, conf);
+        location = RequestHandler::selectLocation(request, *server);
+        if (!location)
+          response = RequestHandler::createErrorResponse(Http::NotFound, request, server);
+        else
+          response = RequestHandler::createResponse(request, server, location);
       }
     }
     catch(const std::exception& e)
@@ -82,15 +85,24 @@ namespace WS { namespace Core {
   {
     Utils::Logger::debug("RequestHandler::selectLocation"); // < DEBUG
 
+    const Config::ServerLocation* best_prefix_location = NULL;
+    size_t                  best_prefix_len = 0;
+
     for (size_t i = 0; i < server.location_list.size(); ++i)
     {
       const Config::ServerLocation& curr = server.location_list[i];
 
-      if (curr.path == request.uri)
+      if (request.uri == curr.path)
         return &curr;
+
+      if (request.uri.find(curr.path) == 0 && curr.path.size() > best_prefix_len) // check prefix 
+      {
+        best_prefix_location = &curr;
+        best_prefix_len = curr.path.size();
+      }
     }
 
-    return NULL;
+    return best_prefix_location;
   }
 
 
@@ -168,12 +180,15 @@ namespace WS { namespace Core {
                                                       const Config::ServerLocation* location)
   {
     Utils::Logger::debug("RequestHandler::responseFromGet"); // < DEBUG
-    // case 1. Location processing
+    
+    /// case 1. Location processing
+    Utils::Logger::debug("Absolute path : " + absolute_path); // < DEBUG
+    Utils::Logger::debug("Location path : " + location->path); // < DEBUG
     if (location && (
-      Utils::File::isDir(absolute_path.c_str()) 
-      || absolute_path.find(location->path) != std::string::npos
-    ))
+      Utils::File::isDir(absolute_path.c_str())
+      || !location->index.empty()))
     {
+      Utils::Logger::debug("RequestHandler::responseFromGet CASE 1"); // < DEBUG
       try
       {
         return responseFromLocationIndex(absolute_path, location);
@@ -191,7 +206,8 @@ namespace WS { namespace Core {
       }
     }
 
-    // case 2. Open file
+    /// case 2. Open file
+    Utils::Logger::debug("RequestHandler::responseFromGet CASE 2"); // < DEBUG
     std::string data;
     try
     {
@@ -206,8 +222,20 @@ namespace WS { namespace Core {
       throw;
     }
 
-    // case 3. HEAD method, but it's not implemented
-    return createErrorResponse(Http::NotImplemented, request, server);
+    // generate response
+    Http::Response response;
+
+    response.version = "HTTP/1.1";
+    response.status_code = Http::Ok;
+
+    response.body = data;
+
+    response.headers.insert(std::make_pair(
+      "Content-Type",
+      RequestHandler::getContentType(absolute_path)
+    ));
+
+    return response;
   }
 
   Http::Response    RequestHandler::responseFromPost(const std::string& absolute_path,
@@ -247,11 +275,12 @@ namespace WS { namespace Core {
                                                               const Config::ServerLocation* location)
   {
     Utils::Logger::debug("RequestHandler::responseFromLocationIndex"); // < DEBUG
+
     // Index file searching
     size_t i_file;
     for (i_file = 0; i_file < location->index.size(); ++i_file)
     {
-      if (Utils::File::fileExists(location->index[i_file].c_str()))
+      if (Utils::File::fileExists((absolute_path + location->index[i_file]).c_str()))
         break;
     }
 
@@ -301,20 +330,27 @@ namespace WS { namespace Core {
     // case 1. location with root (delete location path part)
     if (location && !location->root.empty())
     {
+      Utils::Logger::debug("RequestHandler::getAbsolutePath CASE 1"); // < DEBUG
       std::string subpath = request.uri;
 
       subpath.erase(0, location->path.size());
 
+      if (location->root[0] != '/')
+        return Utils::File::getCurrentDir() + "/" + location->root + subpath;
       return location->root + subpath;
     }
-    
+
     // case 2. default (work dir + uri)
+    Utils::Logger::debug("RequestHandler::getAbsolutePath CASE 2"); // < DEBUG
     return (Utils::File::getCurrentDir() + request.uri);
   }
 
   bool        RequestHandler::methodIsAllowed(const Http::Request& request, const Config::ServerLocation& location)
   {
     Utils::Logger::debug("RequestHandler::methodIsAllowed"); // < DEBUG
+
+    if (!location.method.size()) // empty
+      return true;
 
     return (std::find(location.method.begin(), location.method.end(),
       Http::Parser::methodToString(request.method)) != location.method.end());

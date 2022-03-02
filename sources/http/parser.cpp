@@ -25,9 +25,7 @@ namespace WS { namespace Http
     Request request;
 
     // start-line
-    {
-      Utils::Logger::debug("Start-line: [" + splitted_raw_headers[0] + "]"); // < DEBUG
-      
+    {      
       std::vector<std::string> splitted_startline = Utils::String::split(
         splitted_raw_headers[0], ' ');
 
@@ -118,7 +116,7 @@ namespace WS { namespace Http
 
   std::string Parser::methodToString(Method method)
   {
-     Utils::Logger::debug("Http::Parser::methodToString"); // < DEBUG
+    Utils::Logger::debug("Http::Parser::methodToString"); // < DEBUG
     
     if (method == GET) return "GET";
     if (method == POST) return "POST";
