@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <exception>
+#include <unistd.h>
 
 namespace WS { namespace Core {
 
@@ -244,12 +245,13 @@ namespace WS { namespace Core {
                                                       const Config::ServerLocation* location)
   {
     Utils::Logger::debug("RequestHandler::responseFromPost"); // < DEBUG
-    (void)absolute_path;
-    (void)request;
-    (void)server;
+    
+    size_t dot = absolute_path.rfind('.');
+    std::string ext = absolute_path.substr(dot);
+    
     (void)location;
 
-    // TODO
+    /// CGI
 
     return createErrorResponse(Http::NotImplemented, request, server);
   }
@@ -265,9 +267,31 @@ namespace WS { namespace Core {
     (void)server;
     (void)location;
 
-    // TODO
+    Http::Response response;
 
-    return createErrorResponse(Http::NotImplemented, request, server);
+    response.version = "HTTP/1.1";
+
+    if (!Utils::File::isDir(absolute_path.c_str()))
+    {
+      std::string data = Utils::File::readFile(absolute_path.c_str());
+      ::remove(absolute_path.c_str());
+
+      response.status_code = Http::Ok;
+      response.body = data;
+
+      response.headers.insert(std::make_pair(
+        "Content-Type",
+        RequestHandler::getContentType(absolute_path)
+      ));
+    }
+    else
+    {
+      ::rmdir(absolute_path.c_str());
+
+      response.status_code = Http::NoContent;
+    }
+
+    return response;
   }
 
   /// Index
