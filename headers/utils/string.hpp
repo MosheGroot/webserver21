@@ -40,12 +40,21 @@ namespace Utils
 
     /* @brief Split string for parsing. Separate by spaсe.
       */
-    static std::vector<std::string>   splitStr(std::string line);
+    static std::vector<std::string>  splitStr(std::string line);
 
     /* @brief Some type to string
       */
     template <typename T>
-    static std::string                to_string(T data);
+    static std::string               to_string(T data);
 
   }; //!class String
 } //!namespace Utils
+
+template <typename T>
+std::string                          Utils::String::to_string(T data)
+{
+  std::ostringstream result;
+
+  result << data;
+  return result.str();
+}

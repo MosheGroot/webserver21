@@ -5,7 +5,7 @@
 #include <exception>
 
 #include "../models/config.hpp"
-#include "../utils/string.hpp"
+#include "../../utils/string.hpp"
 
 namespace WS { namespace Config
 {

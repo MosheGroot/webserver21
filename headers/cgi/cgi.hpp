@@ -6,8 +6,16 @@
 #include <new>
 #include <string.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <fstream>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "../config/models/config.hpp"
+#include "../http/http.hpp"
 
 namespace WS { namespace Cgi
 {
@@ -20,21 +28,22 @@ namespace WS { namespace Cgi
         */
       std::map<std::string, std::string> env_;
 
-      /* @brief init ENVS.
-        */
-      void          initEnv_(Config::ServerConfig &serv, Config::ServerLocation &serv_location, Http::Request &request);
-
-
     public:
 
-      std::string   executeCgi(const std::string& script, Config::ServerConfig &serv, Config::ServerLocation &serv_location, Http::Request &request);
+      Cgi();
+      ~Cgi();
+      std::string   executeCgi(const std::string& script);
       char          **envChar();
+
+      /* @brief init ENVS.
+        */
+      void          initEnv(Config::ServerConfig &serv, Config::ServerLocation &serv_location, Http::Request &request);
 
       /* @brief Exception if config data is wrong
         */
-      // class	ErrorMemoryException: public std::exception {
-      //   virtual const char  *what() const throw();
-      // };
+      class	ErrorMemoryException: public std::exception {
+        virtual const char  *what() const throw();
+      };
 
   }; //!class CGI
 }} //!namespace WS::Cgi

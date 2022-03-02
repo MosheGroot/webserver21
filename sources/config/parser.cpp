@@ -88,6 +88,10 @@ namespace WS { namespace Config
         new_location.root = result[1];
       else if (result[0] == "index" && len == 2)
         new_location.index = result[1];
+      else if (result[0] == "cgi_path" && len == 2)
+        new_location.index = result[1];
+      else if (result[0] == "cgi_pass" && len == 2)
+        new_location.index = result[1];
       else if (result[0] == "location" && len == 2)
       {
         out.location_list.push_back(new_location);
@@ -112,25 +116,6 @@ namespace WS { namespace Config
       throw FileNotFoundException();
     parseConfig(conffile, out);
     conffile.close();
-  }
-
-  std::vector<std::string>   Utils::String::splitStr(std::string line) 
-  {
-    std::vector<std::string> result;
-    std::string buffer = "";
-    int len = (int)line.length();
-
-    for (int i = 0; i < len; i++)
-    {
-      if (line[i] != ' ')
-        buffer += line[i];
-      if ((line[i] == ' ' && buffer.size() > 0) || i == len -1)
-      {
-        result.push_back(buffer);
-        buffer = "";
-      }
-    }
-    return result;
   }
 
   const char        *Parser::FileNotFoundException::what() const throw()

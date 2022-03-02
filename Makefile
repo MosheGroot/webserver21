@@ -7,6 +7,7 @@ DEP_FLAGS	:= -MP -MMD
 SRCS_DIRS	:= $(addprefix sources, \
 					/ \
 		  			/core \
+					/cgi \
 					/utils \
 					/config \
 					/http \
@@ -16,6 +17,7 @@ HDRS_DIRS	:= $(addprefix headers, \
 					/ \
 		  			/core \
 					/utils \
+					/cgi \
 					$(addprefix /config, \
 						/models \
 						/parser \
@@ -35,6 +37,9 @@ vpath %.hpp	$(HDRS_DIRS)
 # 			example2.hpp
 
 SRCS		:=  main.cpp \
+				$(addprefix cgi/,\
+					cgi.cpp \
+				) \
 				$(addprefix config/, \
 					parser.cpp \
 				) \
@@ -70,7 +75,7 @@ all:
 
 $(NAME):			$(OBJS)
 					@echo "$(FMT_BOLD)Linking files...$(FMT_DEF)"
-					@$(CC) $(OBJS) $(CFLAGS) -o $@
+					$(CC) $(OBJS) $(CFLAGS) -o $@
 					@echo "$(FMT_WHITE_B)'$(NAME)'$(FMT_BOLD) has been created/updated.$(FMT_DEF)"
 
 $(OBJS_DIR)/%.o:	%.cpp | $(OBJS_DIR)

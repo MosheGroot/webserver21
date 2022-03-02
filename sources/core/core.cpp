@@ -89,8 +89,7 @@ namespace WS { namespace Core
       usleep(100); // because too hot...
     
     } // !while (true)
-    
-    Cgi::Cgi::executeCgi()
+
     if (close(socket_) == -1)
       throw std::runtime_error("Can't close the socket_"); // kinda useless unless we handle ctr+c; move in separate function
   }
