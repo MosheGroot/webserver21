@@ -1,6 +1,7 @@
 #include "../../headers/core/pagegenerator.hpp"
 #include "../../headers/utils/file.hpp"
 #include "../../headers/utils/string.hpp"
+#include "../../headers/utils/logger.hpp"
 
 #include <vector>
 #include <dirent.h>
@@ -10,33 +11,32 @@
 namespace WS { namespace Core {
 
   // Traits
-  const char * const PageGenerator::error_page_path_    = "resourses/default_pages/error.html";
-  const char * const PageGenerator::default_page_path_  = "resourses/default_pages/default.html";
-
-  const char * const PageGenerator::error_page_message_var_   = "{error_message}";
-  const char * const PageGenerator::default_page_message_var_ = "{message}";
+  const char * const PageGenerator::error_page_path_    = "resources/default_pages/error.html";
+  const char * const PageGenerator::default_page_path_  = "resources/default_pages/default_index.html";
 
   // Generators
-  std::string   PageGenerator::generateErrorPage(const std::string& error_message, const char *error_page_path)
+  std::string   PageGenerator::generateErrorPage(const char *error_page_path)
   {
-    std::string page_template = Utils::File::readFile(
+    Utils::Logger::debug("PageGenerator::generateErrorPage"); // < DEBUG
+    std::string page = Utils::File::readFile(
       (error_page_path) ? error_page_path : PageGenerator::error_page_path_);
 
-    std::vector<std::string> splitted = Utils::String::splitOnce(
-      page_template, PageGenerator::default_page_message_var_);
-
-    return splitted[0] + error_message + splitted[1];
+    return page;
   }
 
   
   std::string  PageGenerator::generateDefaultPage()
   {
-    return "";
+    Utils::Logger::debug("PageGenerator::generateDefaultPage"); // < DEBUG
+    
+    return Utils::File::readFile(PageGenerator::default_page_path_);
   }
 
 
   std::string  PageGenerator::generateIndexPage(std::string path)
   {
+    Utils::Logger::debug("PageGenerator::generateIndexPage"); // < DEBUG
+    
     DIR *dir;
     struct dirent *entry;
 

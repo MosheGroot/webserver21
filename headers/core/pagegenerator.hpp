@@ -10,15 +10,12 @@ namespace WS { namespace Core {
     PageGenerator() {} //deleted
 
     static const char * const error_page_path_;
-    static const char * const error_page_message_var_;
-
     static const char * const default_page_path_;
-    static const char * const default_page_message_var_;
 
   public:
     /* @brief Generate error page with specified error code
     */
-    static std::string  generateErrorPage(const std::string& error_message, const char *error_page_path=NULL);
+    static std::string  generateErrorPage(const char *error_page_path=NULL);
 
     /* @brief Generate default page
     */

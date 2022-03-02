@@ -16,6 +16,8 @@ namespace WS { namespace Core {
                                       const std::string& port, 
                                       const Config::Config& conf)
   {
+    Utils::Logger::debug("RequestHandler::handle"); // < DEBUG
+    
     const Http::Request           request = Http::Parser::deserializeRequest(raw_request);
     const Config::ServerConfig*   server = NULL;
     const Config::ServerLocation* location = NULL;
@@ -25,7 +27,7 @@ namespace WS { namespace Core {
     try
     {
       server = RequestHandler::selectServer(request, ip, port, conf);
-      if (!server)
+      if (!server) // imposible, but...
       {
         response = RequestHandler::createDefaultPageResponse();
       }
@@ -51,6 +53,8 @@ namespace WS { namespace Core {
                                                               const std::string& port,
                                                               const Config::Config& conf)
   {
+    Utils::Logger::debug("RequestHandler::selectServer"); // < DEBUG
+    
     const Config::ServerConfig* default_server = NULL;
     
     for (size_t i = 0; i < conf.server_list.size(); ++i)
@@ -76,6 +80,8 @@ namespace WS { namespace Core {
   const Config::ServerLocation* RequestHandler::selectLocation(const Http::Request& request,
                                                                 const Config::ServerConfig& server)
   {
+    Utils::Logger::debug("RequestHandler::selectLocation"); // < DEBUG
+
     for (size_t i = 0; i < server.location_list.size(); ++i)
     {
       const Config::ServerLocation& curr = server.location_list[i];
@@ -93,6 +99,8 @@ namespace WS { namespace Core {
                                                                 const Config::ServerConfig* server,
                                                                 const Config::ServerLocation* location)
   {
+    Utils::Logger::debug("RequestHandler::createResponse"); // < DEBUG
+
     if (location && !methodIsAllowed(request, *location))
       return RequestHandler::createErrorResponse(Http::MethodNotAllowed, request, server);
 
@@ -114,6 +122,7 @@ namespace WS { namespace Core {
                                                                 const Http::Request& request, 
                                                                 const Config::ServerConfig* server)
   {
+    Utils::Logger::debug("RequestHandler::createErrorResponse"); // < DEBUG
     Utils::Logger::error(request.headers.at("Host") + request.uri + ": " + Http::Parser::statusToString(code));
 
     Http::Response  response;
@@ -124,12 +133,12 @@ namespace WS { namespace Core {
     {
       // redirect to error page
       // TODO
-      response.body = PageGenerator::generateErrorPage(Http::Parser::statusToString(code));
+      response.body = PageGenerator::generateErrorPage();
     }
     else
     {
       // default error page
-      response.body = PageGenerator::generateErrorPage(Http::Parser::statusToString(code));
+      response.body = PageGenerator::generateErrorPage();
     }
 
     return response;
@@ -138,11 +147,14 @@ namespace WS { namespace Core {
 
   Http::Response             RequestHandler::createDefaultPageResponse()
   {
+    Utils::Logger::debug("RequestHandler::createDefaultPageResponse"); // < DEBUG
     Http::Response  response;
     response.version = "HTTP/1.1";
     response.status_code = Http::Ok;
     
     response.body = PageGenerator::generateDefaultPage();
+
+    response.headers.insert(std::make_pair("Content-Type", "text/html"));
 
     return response;
   }
@@ -155,6 +167,7 @@ namespace WS { namespace Core {
                                                       const Config::ServerConfig* server,
                                                       const Config::ServerLocation* location)
   {
+    Utils::Logger::debug("RequestHandler::responseFromGet"); // < DEBUG
     // case 1. Location processing
     if (location && (
       Utils::File::isDir(absolute_path.c_str()) 
@@ -202,6 +215,7 @@ namespace WS { namespace Core {
                                                       const Config::ServerConfig* server,
                                                       const Config::ServerLocation* location)
   {
+    Utils::Logger::debug("RequestHandler::responseFromPost"); // < DEBUG
     (void)absolute_path;
     (void)request;
     (void)server;
@@ -217,6 +231,7 @@ namespace WS { namespace Core {
                                                         const Config::ServerConfig* server,
                                                         const Config::ServerLocation* location)
   {
+    Utils::Logger::debug("RequestHandler::responseFromDelete"); // < DEBUG
     (void)absolute_path;
     (void)request;
     (void)server;
@@ -231,6 +246,7 @@ namespace WS { namespace Core {
   Http::Response    RequestHandler::responseFromLocationIndex(const std::string& absolute_path,
                                                               const Config::ServerLocation* location)
   {
+    Utils::Logger::debug("RequestHandler::responseFromLocationIndex"); // < DEBUG
     // Index file searching
     size_t i_file;
     for (i_file = 0; i_file < location->index.size(); ++i_file)
@@ -264,6 +280,7 @@ namespace WS { namespace Core {
 
   Http::Response    RequestHandler::responseFromAutoIndex(std::string absolute_path)
   {
+    Utils::Logger::debug("RequestHandler::responseFromAutoIndex"); // < DEBUG
     Http::Response  response;
 
     response.version = "HTTP/1.1";
@@ -279,6 +296,8 @@ namespace WS { namespace Core {
   std::string RequestHandler::getAbsolutePath(const Http::Request& request,
                                               const Config::ServerLocation* location)
   {
+    Utils::Logger::debug("RequestHandler::getAbsolutePath"); // < DEBUG
+    
     // case 1. location with root (delete location path part)
     if (location && !location->root.empty())
     {
@@ -295,12 +314,16 @@ namespace WS { namespace Core {
 
   bool        RequestHandler::methodIsAllowed(const Http::Request& request, const Config::ServerLocation& location)
   {
+    Utils::Logger::debug("RequestHandler::methodIsAllowed"); // < DEBUG
+
     return (std::find(location.method.begin(), location.method.end(),
       Http::Parser::methodToString(request.method)) != location.method.end());
   }
 
   std::string RequestHandler::getContentType(const std::string& filename)
   {
+    Utils::Logger::debug("RequestHandler::getContentType"); // < DEBUG
+    
     size_t found_index = filename.rfind('.');
     if (found_index == std::string::npos) {
       return "text/plain";

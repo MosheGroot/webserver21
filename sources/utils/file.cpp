@@ -10,18 +10,33 @@
 #include <sstream>
 
 #include "../../headers/utils/file.hpp"
+#include "../../headers/utils/exceptions.hpp"
+#include "../../headers/utils/logger.hpp"
 
 namespace WS { namespace Utils
 {
 
   std::string File::readFile(const char *filename)
   {
-    std::ifstream file(filename);
+    std::string absolute_path;
+    if (filename[0] != '/')
+      absolute_path = File::getCurrentDir() + "/" + std::string(filename);
+    else
+      absolute_path = std::string(filename);
+
+
+    Utils::Logger::debug(absolute_path);
+    std::ifstream file(absolute_path.c_str());
+
+    if (!file.is_open())
+      throw Utils::Exceptions::FileDoesNotExist();
 
     std::stringstream buffer;
     buffer << file.rdbuf();
 
-    return buffer.str();
+    std::string text = buffer.str();
+    Utils::Logger::debug(text);
+    return text;
   }
 
 

@@ -158,7 +158,10 @@ namespace WS { namespace Core
 
     std::string response = RequestHandler::handle(msg, "127.0.0.1", "8080", this->conf_);
 
+    Utils::Logger::instance_.debug("SENDING RESPONSE");
+    Utils::Logger::instance_.debug(response);
     sendMsg(msg_owner, response.c_str(), response.size());
+    Utils::Logger::instance_.debug("RESPONSE HAS BEEN SENDED");
   }
 
   int  Server::recvMsg(int socket_recv_from)

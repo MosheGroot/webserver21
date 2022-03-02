@@ -1,14 +1,17 @@
 #include "../../headers/http/parser/parser.hpp"
 #include "../../headers/utils/string.hpp"
+#include "../../headers/utils/logger.hpp" // < debug
 
 namespace WS { namespace Http
 {
   Request      Parser::deserializeRequest(const std::string& data)
   {
+    Utils::Logger::debug("Http::Parser::deserializeRequest"); // < DEBUG
+
     /// Prepare
     // check raw data
     if (data.empty())
-      throw std::invalid_argument("empty request");
+      throw std::invalid_argument("deserializeRequest exception: empty request");
 
     // split headers and body
     std::vector<std::string>  splitted_request = Utils::String::splitOnce(data, "\r\n\r\n");
@@ -23,11 +26,13 @@ namespace WS { namespace Http
 
     // start-line
     {
+      Utils::Logger::debug("Start-line: [" + splitted_raw_headers[0] + "]"); // < DEBUG
+      
       std::vector<std::string> splitted_startline = Utils::String::split(
         splitted_raw_headers[0], ' ');
 
       if (splitted_startline.size() != 3)
-        throw std::invalid_argument("invalid start-line of request");
+        throw std::invalid_argument("deserializeRequest exception: invalid start-line of request");
 
       request.method = Parser::stringToMethod(splitted_startline[0]);
       request.uri = splitted_startline[1];
@@ -58,7 +63,7 @@ namespace WS { namespace Http
       if (request.method == POST)
       {
         if (splitted_request.size() <= 1)
-          throw std::invalid_argument("missing empty line after headers");
+          throw std::invalid_argument("deserializeRequest exception: missing empty line after headers");
         request.body = splitted_request[1];
       }
     }
@@ -70,6 +75,8 @@ namespace WS { namespace Http
 
   std::string  Parser::serializeResponse(const Response& data)
   {
+    Utils::Logger::debug("Http::Parser::serializeResponse"); // < DEBUG
+
     std::stringstream ss;
 
     /// Serialize
@@ -90,7 +97,7 @@ namespace WS { namespace Http
       ss << "Content-Length: " << data.body.size();
     }
     
-    ss << "\r\n" // empty line between headers and body
+    ss << "\r\n\r\n" // empty line between headers and body
       << data.body;
 
     /// Return
@@ -100,6 +107,8 @@ namespace WS { namespace Http
 
   Method      Parser::stringToMethod(const std::string& source)
   {
+    Utils::Logger::debug("Http::Parser::stringToMethod"); // < DEBUG
+    
     if (source == "GET") return GET;
     if (source == "POST") return POST;
     if (source == "DELETE") return DELETE;
@@ -109,6 +118,8 @@ namespace WS { namespace Http
 
   std::string Parser::methodToString(Method method)
   {
+     Utils::Logger::debug("Http::Parser::methodToString"); // < DEBUG
+    
     if (method == GET) return "GET";
     if (method == POST) return "POST";
     if (method == DELETE) return "DELETE";
@@ -118,6 +129,8 @@ namespace WS { namespace Http
 
   std::string Parser::statusToString(StatusCode status_code)
   {
+     Utils::Logger::debug("Http::Parser::statusToString"); // < DEBUG
+    
     if (status_code == Continue)            return "100 Continue";
     if (status_code == Continue)            return "100 Continue";
     if (status_code == Processing)          return "102 Processing";
