@@ -114,8 +114,11 @@ namespace WS { namespace Core {
   {
     Utils::Logger::debug("RequestHandler::createResponse"); // < DEBUG
 
-    if (location && !methodIsAllowed(request, *location))
+    if (location && !methodIsAllowed(request, *location)) // method is not allowed
       return RequestHandler::createErrorResponse(Http::MethodNotAllowed, request, server);
+
+    if (location && !location->redirect.empty()) // redirect
+      return RequestHandler::createRedirectResponse(location->redirect);
 
     std::string path = RequestHandler::getAbsolutePath(request, location);
 
@@ -171,6 +174,20 @@ namespace WS { namespace Core {
 
     return response;
   }
+
+  
+  Http::Response      RequestHandler::createRedirectResponse(const std::string& redirect_url)
+  {
+    Http::Response  response;
+
+    response.version = "HTTP/1.1";
+    response.status_code = Http::MovedPermanently;
+
+    response.headers.insert(std::make_pair("Location", redirect_url));
+
+    return response;
+  }
+
 
 
   /// Methods

@@ -108,6 +108,10 @@ namespace WS { namespace Config
 
         new_location.autoindex = result[1];
       }
+      else if (result[0] == "redirect" && len == 2)
+      {
+        new_location.redirect = result[1];
+      }
       else if (result[0] == "location" && len == 2)
       {
         out.location_list.push_back(new_location);

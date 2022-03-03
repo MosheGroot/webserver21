@@ -17,5 +17,7 @@ namespace WS { namespace Config
 
     std::vector<std::string> method;
 
+    std::string redirect;
+
   }; //!class ServerLocation
 }} //!namespace WS::Config

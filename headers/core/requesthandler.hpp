@@ -58,6 +58,10 @@ namespace WS { namespace Core
     */
     static Http::Response      createDefaultPageResponse(void);
 
+    /* @brief Creates redirect response to specified redirect_url  
+    */
+    static Http::Response      createRedirectResponse(const std::string& redirect_url);
+
 
   /// Methods
     static Http::Response           responseFromGet(const std::string& absolute_path,
