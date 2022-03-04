@@ -1,8 +1,5 @@
 #include "../headers/core/core.hpp"
-#include "../headers/config/config.hpp"
-#include "../headers/utils/debug.hpp"
 #include "../headers/utils/logger.hpp"
-#include "../headers/core/requesthandler.hpp"
 
 int main(int argc, const char *argv[])
 {

@@ -5,6 +5,7 @@
 #include <exception>
 
 #include "../models/config.hpp"
+#include "../../utils/string.hpp"
 
 namespace WS { namespace Config
 {
@@ -31,19 +32,29 @@ namespace WS { namespace Config
       */
     static void   parseServerLocation(std::ifstream& data, ServerConfig &out, std::string path);
 
-    /* @brief Split string. Separate by spaсe.
+    /* @brief Check ip.
       */
-    static std::vector<std::string>   splitStr(std::string line);
+    static bool   checkIp(std::string &ip_addr);
+
+    /* @brief Convert to int.
+      */
+    static int    to_int(std::string &data);
 
     /* @brief Exception if file not found
       */
-    class	FileNotFoundException: public std::exception{
+    class	FileNotFoundException: public std::exception {
       virtual const char  *what() const throw();
     };
 
     /* @brief Exception if config data is wrong
       */
-    class	WrongConfigException: public std::exception{
+    class	WrongConfigException: public std::exception {
+      virtual const char  *what() const throw();
+    };
+
+    /* @brief Exception if wrong ip address
+      */
+    class	WrongIpAddress: public std::exception {
       virtual const char  *what() const throw();
     };
 

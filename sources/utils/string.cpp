@@ -86,6 +86,25 @@ namespace WS { namespace Utils {
     return result;
   }
 
+  std::vector<std::string>   String::splitStr(std::string line) 
+  {
+    std::vector<std::string> result;
+    std::string buffer = "";
+    int len = (int)line.length();
+
+    for (int i = 0; i < len; i++)
+    {
+      if (line[i] != ' ')
+        buffer += line[i];
+      if ((line[i] == ' ' && buffer.size() > 0) || i == len -1)
+      {
+        result.push_back(buffer);
+        buffer = "";
+      }
+    }
+    return result;
+  }
+
   std::string   String::toLower(std::string text)
   {
     for (size_t i = 0; i < text.size(); ++i)
