@@ -9,12 +9,18 @@ namespace WS { namespace Config
   {
 
     std::string path;
-
+    
     std::string root;
+    std::vector<std::string> index;
+    
+    std::vector<std::string> method;
+
+    std::string autoindex;
+
     std::string cgi_path;
     std::string cgi_pass;
     
-    std::vector<std::string> method;
+    std::string redirect;
 
   }; //!class ServerLocation
 }} //!namespace WS::Config

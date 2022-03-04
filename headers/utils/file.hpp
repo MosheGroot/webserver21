@@ -26,14 +26,26 @@ namespace WS { namespace Utils
       @param path Path with directory(-ies) to create\
       @param mode Mode for created directories
     */
-    static void         createPath(const char* path, mode_t mode = 0700);
+    static void         createPath(const char* path, __mode_t mode = 0700);
 
     /* @brief Create single directory given as `dir`
 
       @param dir  Path to directory to create
       @param mode Mode for created dir
     */
-    static void         createDir(const char* dir, mode_t mode = 0700);
+    static void         createDir(const char* dir, __mode_t mode = 0700);
+
+    /* @brief Check if path is a directory
+    */
+    static bool         isDir(const char *path);
+
+    /* @brief Check is file exists
+    */
+    static bool         fileExists(const char *path);
+    
+    /* @brief Get current work directory (exec pwd)
+    */
+    static std::string  getCurrentDir(void);
 
   }; //!class File
 }} //!namespace WS::Utils

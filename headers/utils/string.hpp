@@ -6,8 +6,7 @@
 #include <vector>
 #include <exception>
 
-namespace Utils
-{
+namespace WS { namespace Utils {
   /* @brief Static class for String processing
   */
   class String
@@ -45,16 +44,21 @@ namespace Utils
     /* @brief Some type to string
       */
     template <typename T>
-    static std::string               to_string(T data);
+    static std::string  to_string(T data);
+
+    /* @brief Convert entire string to lowercase (ASCII only)
+    */
+    static std::string  toLower(std::string text);
 
   }; //!class String
-} //!namespace Utils
+  
+  template <typename T>
+  std::string                          Utils::String::to_string(T data)
+  {
+    std::ostringstream result;
 
-template <typename T>
-std::string                          Utils::String::to_string(T data)
-{
-  std::ostringstream result;
-
-  result << data;
-  return result.str();
-}
+    result << data;
+    return result.str();
+  }
+  
+}} //!namespace WS::Utils

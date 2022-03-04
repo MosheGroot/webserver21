@@ -18,7 +18,7 @@ namespace WS { namespace Config
 
     /* @brief Parsing and read config file.
       */
-    static void   parsFile(const char *filename, Config &out);
+    static void   parseFile(const char *filename, Config &out);
 
     /* @brief Parsing config.
       */

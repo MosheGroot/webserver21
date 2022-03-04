@@ -33,8 +33,10 @@ namespace WS { namespace Http
     static std::string  serializeResponse(const Response& data);
 
 
-  private:
-    static Method  stringToMethod(const std::string& source);
+    static Method       stringToMethod(const std::string& source);
+    static std::string  methodToString(Method method);
+    static std::string  statusToString(StatusCode status_code);
+
 
   }; //!class Parser
 }} //!namespace WS::Http

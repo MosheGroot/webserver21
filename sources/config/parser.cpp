@@ -1,4 +1,7 @@
 #include "../../headers/config/config.hpp"
+#include "../../headers/utils/string.hpp"
+
+#include <cstdlib>
 
 namespace WS { namespace Config
 {
@@ -40,14 +43,17 @@ namespace WS { namespace Config
       }
       else if (result[0] == "port" && len == 2)
         new_server.port = result[1];
-      else if (result[0] == "root" && len == 2)
-        new_server.root = result[1];
-      else if (result[0] == "autoindex" && len == 2)
-        new_server.autoindex = result[1];
       else if (result[0] == "buff_size_body" && len == 2)
         new_server.buff_size_body = result[1];
-      else if (result[0] == "error_page" && len == 2)
-        new_server.error_page = result[1];
+      else if (result[0] == "error_page")
+      {
+        const std::string& error_page_uri = result[result.size() - 1];
+
+        for (size_t i = 1; i < result.size() - 1; ++i)
+        new_server.error_page.insert(std::make_pair(
+          static_cast<Http::StatusCode>(atoi(result[i].c_str())),
+          error_page_uri));
+      }
       else if (result[0] == "location" && len == 2)
       {
         parseServerLocation(conffile, new_server, result[1]);
@@ -72,7 +78,10 @@ namespace WS { namespace Config
     std::string     data;
     std::vector<std::string>  result;
 
+    if (path[0] != '/')
+      throw WrongConfigException();
     new_location.path = path;
+    
     while(!conffile.eof())
     {
       getline(conffile, data);
@@ -86,11 +95,30 @@ namespace WS { namespace Config
           new_location.method.push_back(result[i]);
       }
       else if (result[0] == "root" && len == 2)
+      {
+        if (result[1][result[1].size() - 1] != '/')
+          result[1].push_back('/');
         new_location.root = result[1];
+      }
+      else if (result[0] == "index" && len == 2)
+        new_location.index.push_back(result[1]);
+      else if (result[0] == "autoindex" && len == 2)
+      {
+        result[1] = Utils::String::toLower(result[1]);
+
+        if (result[1] != "on" && result[1] != "off")
+          throw WrongConfigException();
+
+        new_location.autoindex = result[1];
+      }
       else if (result[0] == "cgi_path" && len == 2)
         new_location.cgi_path = result[1];
       else if (result[0] == "cgi_pass" && len == 2)
         new_location.cgi_pass = result[1];
+      else if (result[0] == "redirect" && len == 2)
+      {
+        new_location.redirect = result[1];
+      }
       else if (result[0] == "location" && len == 2)
       {
         out.location_list.push_back(new_location);
@@ -105,10 +133,14 @@ namespace WS { namespace Config
       else
         throw WrongConfigException();
     }
+
+    if (new_location.autoindex == "")
+      new_location.autoindex = "on";
+
     out.location_list.push_back(new_location);
   }
 
-  void              Parser::parsFile(const char *filename, Config &out) 
+  void              Parser::parseFile(const char *filename, Config &out) 
   {
     std::ifstream   conffile(filename);
     std::string     data;
