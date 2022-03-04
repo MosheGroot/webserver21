@@ -87,13 +87,4 @@ namespace Utils
     return result;
   }
 
-  // template <typename T>
-  // std::string                 to_string(T data)
-  // {
-  //   std::ostringstream result;
-
-  //   result << data;
-  //   return result.str();
-  // }
-
 } //!namespace Utils

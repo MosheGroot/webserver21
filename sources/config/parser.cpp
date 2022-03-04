@@ -42,8 +42,6 @@ namespace WS { namespace Config
         new_server.port = result[1];
       else if (result[0] == "root" && len == 2)
         new_server.root = result[1];
-      else if (result[0] == "index" && len == 2)
-        new_server.index = result[1];
       else if (result[0] == "autoindex" && len == 2)
         new_server.autoindex = result[1];
       else if (result[0] == "buff_size_body" && len == 2)
@@ -62,7 +60,10 @@ namespace WS { namespace Config
       new_server.port = "8080";
     if (new_server.ip_addr == "" || new_server.ip_addr == "localhost")
       new_server.ip_addr = "127.0.0.1";
-    out.server_list.push_back(new_server);
+    if (checkIp(new_server.ip_addr))
+      out.server_list.push_back(new_server);
+    else
+      throw WrongIpAddress();
   }
 
   void              Parser::parseServerLocation(std::ifstream& conffile, ServerConfig &out, std::string path)
@@ -86,17 +87,17 @@ namespace WS { namespace Config
       }
       else if (result[0] == "root" && len == 2)
         new_location.root = result[1];
-      else if (result[0] == "index" && len == 2)
-        new_location.index = result[1];
       else if (result[0] == "cgi_path" && len == 2)
-        new_location.index = result[1];
+        new_location.cgi_path = result[1];
       else if (result[0] == "cgi_pass" && len == 2)
-        new_location.index = result[1];
+        new_location.cgi_pass = result[1];
       else if (result[0] == "location" && len == 2)
       {
         out.location_list.push_back(new_location);
         new_location.path = result[1];
         new_location.root = "";
+        new_location.cgi_pass = "";
+        new_location.cgi_path = "";
         new_location.method.clear();
       }
       else if (len == 0)
@@ -114,8 +115,36 @@ namespace WS { namespace Config
 
     if (!conffile.is_open())
       throw FileNotFoundException();
+
     parseConfig(conffile, out);
     conffile.close();
+  }
+
+  bool              Parser::checkIp(std::string &ip_addr)
+  {
+    std::vector<std::string>  data;
+
+    int flag = 0;
+    data = Utils::String::split(ip_addr, '.');
+    for (size_t i = 0; i < data.size(); i++)
+    {
+      if (to_int(data[i]) == 255)
+        flag += 1;
+    }
+    if (flag == 4)
+      return false;
+
+    return true;
+  }
+
+  int               Parser::to_int(std::string &data)
+  {
+    std::stringstream degree(data);
+
+    int res = 0;
+    degree >> res;
+
+    return res;
   }
 
   const char        *Parser::FileNotFoundException::what() const throw()
@@ -126,6 +155,11 @@ namespace WS { namespace Config
   const char        *Parser::WrongConfigException::what() const throw()
   {
     return "Exception thrown: wrong config file";
+  }
+
+  const char        *Parser::WrongIpAddress::what() const throw()
+  {
+    return "Exception thrown: wrong ip address";
   }
 
 }} //!namespace WS::Config

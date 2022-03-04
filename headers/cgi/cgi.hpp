@@ -30,14 +30,12 @@ namespace WS { namespace Cgi
 
     public:
 
-      Cgi();
-      ~Cgi();
       std::string   executeCgi(const std::string& script);
       char          **envChar();
 
       /* @brief init ENVS.
         */
-      void          initEnv(Config::ServerConfig &serv, Config::ServerLocation &serv_location, Http::Request &request);
+      void          initEnv(Config::ServerConfig &serv, Http::Request &request);
 
       /* @brief Exception if config data is wrong
         */

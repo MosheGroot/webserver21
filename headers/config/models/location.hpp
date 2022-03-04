@@ -11,7 +11,8 @@ namespace WS { namespace Config
     std::string path;
 
     std::string root;
-    std::string index;
+    std::string cgi_path;
+    std::string cgi_pass;
     
     std::vector<std::string> method;
 

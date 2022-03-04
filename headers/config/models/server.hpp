@@ -19,7 +19,6 @@ namespace WS { namespace Config
     std::vector<std::string>    server_name;
 
     std::string root;
-    std::string index;
     std::string error_page;
     
     std::string autoindex;
