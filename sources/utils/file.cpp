@@ -6,21 +6,41 @@
 #include <string.h>
 #include <stdexcept>
 
+#include <fstream>
+#include <sstream>
+
 #include "../../headers/utils/file.hpp"
+#include "../../headers/utils/exceptions.hpp"
+#include "../../headers/utils/logger.hpp"
 
 namespace WS { namespace Utils
 {
 
   std::string File::readFile(const char *filename)
   {
-    // TODO
-    (void)filename; // delete after TODO (unused parameter warning)
+    std::string absolute_path;
+    if (filename[0] != '/')
+      absolute_path = File::getCurrentDir() + "/" + std::string(filename);
+    else
+      absolute_path = std::string(filename);
 
-    return "";
+
+    Utils::Logger::debug(absolute_path);
+    std::ifstream file(absolute_path.c_str());
+
+    if (!file.is_open())
+      throw Utils::Exceptions::FileDoesNotExist();
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+
+    std::string text = buffer.str();
+    Utils::Logger::debug(text);
+    return text;
   }
 
 
-  void  File::createPath(const char* path, mode_t mode)
+  void  File::createPath(const char* path, __mode_t mode)
   {
     // make duplicate
     char *copypath = strdup(path);
@@ -48,7 +68,7 @@ namespace WS { namespace Utils
   }
 
 
-  void  File::createDir(const char* dir, mode_t mode)
+  void  File::createDir(const char* dir, __mode_t mode)
   {
     struct stat   st;
 
@@ -63,4 +83,29 @@ namespace WS { namespace Utils
     }
   }
 
+
+  bool   File::isDir(const char *path)
+  {
+    struct stat st;
+
+    stat(path, &st);
+    return S_ISDIR(st.st_mode) != 0;
+  }
+
+
+  bool  File::fileExists(const char *path)
+  {
+    struct stat buff;
+
+    return (stat(path, &buff) == 0);
+  }
+
+  std::string   File::getCurrentDir(void)
+  {
+    char pwd[1024];
+
+    getcwd(pwd, 1024);
+    return pwd;
+  }
+  
 }} //!namespace WS::Utils

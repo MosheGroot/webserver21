@@ -11,9 +11,13 @@ namespace WS { namespace Config
     std::string path;
 
     std::string root;
-    std::string index;
+    std::vector<std::string> index;
     
+    std::string autoindex;
+
     std::vector<std::string> method;
+
+    std::string redirect;
 
   }; //!class ServerLocation
 }} //!namespace WS::Config

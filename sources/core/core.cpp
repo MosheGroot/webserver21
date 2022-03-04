@@ -132,8 +132,10 @@ namespace WS { namespace Core
 
   void  Server::handleConnection(int client_socket, fd_set& writefds)
   {
-    if (recvMsg(client_socket) != CLIENT_DISCONNECTED && FD_ISSET(client_socket, &writefds)) //?
-      sendMsg(client_socket, "Message has been recieved!\n", sizeof("Message has been recieved!\n"));
+    if (recvMsg(client_socket) != CLIENT_DISCONNECTED && FD_ISSET(client_socket, &writefds)) //?z
+    {
+      // sendMsg(client_socket, "Message has been recieved!\n", sizeof("Message has been recieved!\n"));
+    }
   }
 
   void  Server::handleDisconnection(int client_socket)
@@ -153,6 +155,13 @@ namespace WS { namespace Core
 
     ss << "#" << msg_owner << " Recieved: " << msg;
       Utils::Logger::instance_.info(ss.str());
+
+    std::string response = RequestHandler::handle(msg, "127.0.0.1", "8888", this->conf_);
+
+    Utils::Logger::instance_.debug("SENDING RESPONSE");
+    Utils::Logger::instance_.debug(response);
+    sendMsg(msg_owner, response.c_str(), response.size());
+    Utils::Logger::instance_.debug("RESPONSE HAS BEEN SENDED");
   }
 
   int  Server::recvMsg(int socket_recv_from)

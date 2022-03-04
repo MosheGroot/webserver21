@@ -35,6 +35,8 @@ SRCS		:=  main.cpp \
 				) \
 				$(addprefix core/,\
 					core.cpp \
+					requesthandler.cpp \
+					pagegenerator.cpp \
 				) \
 				$(addprefix http/, \
 					parser.cpp \
@@ -45,6 +47,7 @@ SRCS		:=  main.cpp \
 					debug.cpp \
 					time.cpp \
 					string.cpp \
+					exception.cpp \
 				)
 				# $(addprefix example_dir/,
 				#	 example1.cpp,
