@@ -190,6 +190,8 @@ namespace WS { namespace Core
     size_t            max_body_size = atoi(socket_info_[socket_recv_from]->buff_size_body.c_str());
     size_t            headers_end = std::string::npos;
 
+    max_body_size = 10;
+
     std::memset(buffer, 0, sizeof(buffer));
     while ((ret_bytes = recv(socket_recv_from, buffer, sizeof(buffer) - 1, MSG_DONTWAIT)) > 0)
     {
@@ -201,11 +203,14 @@ namespace WS { namespace Core
       // check max body size
       if (headers_end == std::string::npos)
       {
-        headers_end = request.find("\r\n\r\n");
+        //Utils::Logger::error("1. Request size: " + Utils::String::to_string(request.size()) + "\n\theaders_end: " + Utils::String::to_string(headers_end));
+        //Utils::Logger::error("[" + request + "]");
+        headers_end = request.find("\r\n\r\n", request.size() - sizeof(buffer) + 1);
       }
-      else
+      if (headers_end != std::string::npos)
       {
-        if (request.size() - headers_end > max_body_size)
+        //Utils::Logger::error("2. Request size: " + Utils::String::to_string(request.size()) + "\n\theaders_end: " + Utils::String::to_string(headers_end));
+        if (request.size() - headers_end - 4 > max_body_size)
           throw std::runtime_error("Reached max body size"); // not exception, but send error to client
       }
     }
