@@ -39,7 +39,7 @@ SRCS		:=  main.cpp \
 					parser.cpp \
 				) \
 				$(addprefix core/,\
-					core.cpp \
+					server.cpp \
 					requesthandler.cpp \
 					pagegenerator.cpp \
 				) \
