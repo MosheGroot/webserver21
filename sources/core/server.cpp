@@ -23,7 +23,7 @@ namespace WS { namespace Core
   void  Server::init(const char* config_path)
   {
     // Config
-    WS::Config::Parser::parseFile(config_path, const_cast<Config::Config&>(conf_));
+    WS::Config::Parser::parseFile(config_path, conf_);
     WS::Utils::Debug::printConf(conf_); // < DEBUG
 
     // Sockets
@@ -61,10 +61,13 @@ namespace WS { namespace Core
       FD_SET(listening_socket_[i], &master_set_);
 
       // fill socket info to the map
-      info_of_listening_sock_[listening_socket_[i]] = SocketInfo(
-        conf_.server_list[i].ip_addr, 
-        conf_.server_list[i].port,
-        std::atoi(conf_.server_list[i].buff_size_body.c_str()));
+      socket_info_.insert(std::make_pair(listening_socket_[i], &conf_.server_list[i]));
+
+      // socket_info_[listening_socket_[i]] = conf_.server_list[i];
+      // SocketInfo(
+      //   conf_.server_list[i].ip_addr,
+      //   conf_.server_list[i].port,
+      //   std::atoi(conf_.server_list[i].buff_size_body.c_str()));
     }
   }
 
@@ -94,6 +97,8 @@ namespace WS { namespace Core
           if (isListening(socket))
           {
             new_client_socket = acceptConnection(socket);
+            socket_info_[new_client_socket] = socket_info_[socket];
+
             FD_SET(new_client_socket, &master_set_);
           }
           else
@@ -103,7 +108,7 @@ namespace WS { namespace Core
         }
       }
 
-      usleep(100); // because too hot... // remove!
+      //usleep(100); // because too hot... // remove!
     
     }
     
@@ -165,8 +170,8 @@ namespace WS { namespace Core
 
     std::string response = RequestHandler::handle(
       msg,
-      info_of_listening_sock_.at(socket_recv_from).ip_addr,
-      info_of_listening_sock_.at(socket_recv_from).port,
+      socket_info_.at(socket_recv_from)->ip_addr,
+      socket_info_.at(socket_recv_from)->port,
       this->conf_);
 
     Utils::Logger::instance_.debug("SENDING RESPONSE");
@@ -182,8 +187,8 @@ namespace WS { namespace Core
     std::string       request;
     char              buffer[50]; // max_body_size + header
     int               ret_bytes;
-    
-    size_t headers_end = std::string::npos;
+    size_t            max_body_size = atoi(socket_info_[socket_recv_from]->buff_size_body.c_str());
+    size_t            headers_end = std::string::npos;
 
     std::memset(buffer, 0, sizeof(buffer));
     while ((ret_bytes = recv(socket_recv_from, buffer, sizeof(buffer) - 1, MSG_DONTWAIT)) > 0)
@@ -200,8 +205,8 @@ namespace WS { namespace Core
       }
       else
       {
-        if (request.size() - headers_end > info_of_listening_sock_[socket_recv_from].max_body_size)
-          throw std::runtime_error("Reached max body size");
+        if (request.size() - headers_end > max_body_size)
+          throw std::runtime_error("Reached max body size"); // not exception, but send error to client
       }
     }
 

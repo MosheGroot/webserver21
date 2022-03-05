@@ -78,25 +78,25 @@ namespace WS { namespace Core
 
   private:
     // General
-    std::vector<int>      listening_socket_; // mb change on simple int*
+    std::vector<int>      listening_socket_;
     fd_set                master_set_;
-    const Config::Config  conf_;
+    Config::Config        conf_;
 
-    // SocketInfo
-    struct SocketInfo
-    {
-      std::string ip_addr;
-      std::string port;
-      size_t      max_body_size;
+    // // SocketInfo
+    // struct SocketInfo
+    // {
+    //   std::string ip_addr;
+    //   std::string port;
+    //   size_t      max_body_size;
 
-      SocketInfo() {}
+    //   SocketInfo() {}
       
-      SocketInfo(std::string ip_addr, std::string port, int max_body_size)
-        : ip_addr(ip_addr), port(port), max_body_size(max_body_size)
-      {}
-    };
+    //   SocketInfo(std::string ip_addr, std::string port, int max_body_size)
+    //     : ip_addr(ip_addr), port(port), max_body_size(max_body_size)
+    //   {}
+    // };
     
-    std::map<int, struct SocketInfo>  info_of_listening_sock_;
+    std::map<int, struct Config::ServerConfig*>  socket_info_;
 
   }; //!class Server
 }} //!namespace WS::Core
