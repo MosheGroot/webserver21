@@ -1,4 +1,4 @@
-#include "../headers/core/core.hpp"
+#include "../headers/core/server.hpp"
 #include "../headers/utils/logger.hpp"
 
 int main(int argc, const char *argv[])

@@ -1,4 +1,4 @@
-#include "../../headers/core/core.hpp"
+#include "../../headers/core/server.hpp"
 #include "../../headers/utils/logger.hpp"
 #include "../../headers/utils/debug.hpp"
 
@@ -23,7 +23,7 @@ namespace WS { namespace Core
   void  Server::init(const char* config_path)
   {
     // Config
-    WS::Config::Parser::parseFile(config_path, const_cast<Config::Config&>(conf_));
+    WS::Config::Parser::parseFile(config_path, conf_);
     WS::Utils::Debug::printConf(conf_); // < DEBUG
 
     // Sockets
@@ -32,14 +32,17 @@ namespace WS { namespace Core
     listening_socket_.reserve(conf_.server_list.size());
     for (size_t i = 0; i < conf_.server_list.size(); i++)
     {
+      // create socket
       listening_socket_.push_back(socket(AF_INET, SOCK_STREAM, 0));
       if ((listening_socket_[i]) == -1)
         throw std::runtime_error("Can't create a listening socket(): " + std::string(strerror(errno)));
 
+      // set options
       int enable = 1;
       if (setsockopt(listening_socket_[i], SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) == -1)
         throw std::runtime_error("Can't setsockopt() at listening socket: " + std::string(strerror(errno)));
 
+      // bind socket to ip:port and listen
       sockaddr_in hint;
       std::memset(&hint, 0, sizeof(hint));
       hint.sin_family = AF_INET;
@@ -54,7 +57,17 @@ namespace WS { namespace Core
       if (listen(listening_socket_[i], SOMAXCONN) == -1)
         throw std::runtime_error("Can't listen() the socket: " + std::string(strerror(errno)));
 
+      // set up FD
       FD_SET(listening_socket_[i], &master_set_);
+
+      // fill socket info to the map
+      socket_info_.insert(std::make_pair(listening_socket_[i], &conf_.server_list[i]));
+
+      // socket_info_[listening_socket_[i]] = conf_.server_list[i];
+      // SocketInfo(
+      //   conf_.server_list[i].ip_addr,
+      //   conf_.server_list[i].port,
+      //   std::atoi(conf_.server_list[i].buff_size_body.c_str()));
     }
   }
 
@@ -84,6 +97,8 @@ namespace WS { namespace Core
           if (isListening(socket))
           {
             new_client_socket = acceptConnection(socket);
+            socket_info_[new_client_socket] = socket_info_[socket];
+
             FD_SET(new_client_socket, &master_set_);
           }
           else
@@ -93,7 +108,7 @@ namespace WS { namespace Core
         }
       }
 
-      usleep(100); // because too hot... // remove!
+      //usleep(100); // because too hot... // remove!
     
     }
     
@@ -149,32 +164,59 @@ namespace WS { namespace Core
     Utils::Logger::instance_.info(ss.str());
   }
 
-  void  Server::handleMsg(std::string msg, int msg_owner) const
+  void  Server::handleMsg(std::string msg, int socket_recv_from) const
   {
-    std::stringstream ss;
+    Utils::Logger::debug("#" + Utils::String::to_string(socket_recv_from) + "Recieved: " + msg);
 
-    ss << "#" << msg_owner << " Recieved: " << msg;
-      Utils::Logger::instance_.info(ss.str());
-
-    std::string response = RequestHandler::handle(msg, "127.0.0.1", "8888", this->conf_);
+    std::string response = RequestHandler::handle(
+      msg,
+      socket_info_.at(socket_recv_from)->ip_addr,
+      socket_info_.at(socket_recv_from)->port,
+      this->conf_);
 
     Utils::Logger::instance_.debug("SENDING RESPONSE");
-    Utils::Logger::instance_.debug("{" + response + "}");
-    sendMsg(msg_owner, response.c_str(), response.size());
+    Utils::Logger::instance_.debug(response);
+
+    sendMsg(socket_recv_from, response.c_str(), response.size());
+
     Utils::Logger::instance_.debug("RESPONSE HAS BEEN SENDED");
   }
 
   int  Server::recvMsg(int socket_recv_from)
   {
-    char              buf[4096]; // max_body_size + header
-    int               bytes;
+    std::string       request;
+    char              buffer[50]; // max_body_size + header
+    int               ret_bytes;
+    size_t            max_body_size = atoi(socket_info_[socket_recv_from]->buff_size_body.c_str());
+    size_t            headers_end = std::string::npos;
 
-    std::memset(buf, 0, sizeof(buf));
+    max_body_size = 10;
 
-    switch (bytes = recv(socket_recv_from, buf, 4096, 0))
+    std::memset(buffer, 0, sizeof(buffer));
+    while ((ret_bytes = recv(socket_recv_from, buffer, sizeof(buffer) - 1, MSG_DONTWAIT)) > 0)
     {
-      case -1:
-        throw std::runtime_error("Can't recieve() message from the client: " + std::string(strerror(errno))); // Mb it's a regular error, not an exception
+      Utils::Logger::info("GOTCHA " + Utils::String::to_string(ret_bytes));
+      // recieve
+      request += buffer;
+      std::memset(buffer, 0, sizeof(buffer));
+
+      // check max body size
+      if (headers_end == std::string::npos)
+      {
+        //Utils::Logger::error("1. Request size: " + Utils::String::to_string(request.size()) + "\n\theaders_end: " + Utils::String::to_string(headers_end));
+        //Utils::Logger::error("[" + request + "]");
+        headers_end = request.find("\r\n\r\n", request.size() - sizeof(buffer) + 1);
+      }
+      if (headers_end != std::string::npos)
+      {
+        //Utils::Logger::error("2. Request size: " + Utils::String::to_string(request.size()) + "\n\theaders_end: " + Utils::String::to_string(headers_end));
+        if (request.size() - headers_end - 4 > max_body_size)
+          throw std::runtime_error("Reached max body size"); // not exception, but send error to client
+      }
+    }
+
+    switch (ret_bytes)
+    {
       case 0:
       {
         handleDisconnection(socket_recv_from);
@@ -182,7 +224,7 @@ namespace WS { namespace Core
       }
       default:
       {
-        handleMsg(std::string(buf, 0, bytes), socket_recv_from); // if any errors -> disconnetct
+        handleMsg(request, socket_recv_from); // if any errors -> disconnetct
         return 0;
       }
     }

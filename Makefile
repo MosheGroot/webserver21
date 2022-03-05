@@ -1,7 +1,7 @@
 NAME		:= webserv
 
 CC			:= c++
-CFLAGS		:= -Wall -Wextra -Werror -std=c++98
+CFLAGS		:= -Wall -Wextra -Werror -std=c++98 -g
 DEP_FLAGS	:= -MP -MMD
 
 SRCS_DIRS	:= $(addprefix sources, \
@@ -39,7 +39,7 @@ SRCS		:=  main.cpp \
 					parser.cpp \
 				) \
 				$(addprefix core/,\
-					core.cpp \
+					server.cpp \
 					requesthandler.cpp \
 					pagegenerator.cpp \
 				) \
