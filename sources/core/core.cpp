@@ -159,7 +159,7 @@ namespace WS { namespace Core
     std::string response = RequestHandler::handle(msg, "127.0.0.1", "8888", this->conf_);
 
     Utils::Logger::instance_.debug("SENDING RESPONSE");
-    Utils::Logger::instance_.debug(response);
+    Utils::Logger::instance_.debug("{" + response + "}");
     sendMsg(msg_owner, response.c_str(), response.size());
     Utils::Logger::instance_.debug("RESPONSE HAS BEEN SENDED");
   }
@@ -193,7 +193,6 @@ namespace WS { namespace Core
     int ret;
     if ((ret = send(socket_to_send, msg, msg_size, 0)) == -1)
       throw std::runtime_error("Can't send() message to the client: " + std::string(strerror(errno))); // It's a regular error, not an exception
-    std::cout << "{{{{{{" << ret << " | " << msg_size << "}}}}}}}}}" << std::endl;
   }
 
   void  Server::closeListeningSockets() const

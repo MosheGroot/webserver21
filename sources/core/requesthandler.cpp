@@ -208,6 +208,10 @@ namespace WS { namespace Core {
                                                       const Config::ServerConfig* server,
                                                       const Config::ServerLocation* location)
   {
+    (void)request;
+    (void)server;
+    (void)location;
+
     /// Get script path
     std::string script_path;
 
@@ -223,9 +227,7 @@ namespace WS { namespace Core {
 
 
     /// Exec CGI
-    std::string cgi_response;
-
-    cgi_response = CGI::Handler::instance_.exec(script_path, request, *server);    
+    std::string cgi_response = CGI::Handler::instance_.exec(script_path, request, *server);    
     Utils::Logger::info("{" + cgi_response + "}");
 
     /// Get response
@@ -233,7 +235,10 @@ namespace WS { namespace Core {
     response.version = "HTTP/1.1";
     response.status_code = Http::Ok;
 
-    return Http::Parser::serializeResponse(response, false) + cgi_response;
+    // response.body = "<html><title>TESTTTTTT</title></html>\n";
+
+    // return Http::Parser::serializeResponse(response);
+    return Http::Parser::serializeResponse(response) + cgi_response;
   }
 
   /// Methods
@@ -312,7 +317,7 @@ namespace WS { namespace Core {
     
     size_t dot = absolute_path.rfind('.');
     std::string ext = absolute_path.substr(dot);
-    
+
     (void)location;
 
     /// CGI

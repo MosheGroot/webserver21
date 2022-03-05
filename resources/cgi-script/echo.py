@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
 import os
 import sys
 from urllib import response
@@ -18,8 +18,8 @@ response_body = """<html>
     </body>
 </html>""".format(data)
 
-print("Content-type: text/html")
-print("Content-Lenght: {}".format(len(response_body) - 1))
-print()
+print("Content-type: text/html", end='\r\n')
+print("Content-Lenght: {}".format(len(response_body) - 1), end='\r\n')
+print(end='\r\n')
 print(response_body, end='')
 

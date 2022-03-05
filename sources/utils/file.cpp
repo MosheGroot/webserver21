@@ -40,7 +40,7 @@ namespace WS { namespace Utils
   }
 
 
-  void  File::createPath(const char* path, __mode_t mode)
+  void  File::createPath(const char* path, mode_t mode)
   {
     // make duplicate
     char *copypath = strdup(path);
@@ -68,7 +68,7 @@ namespace WS { namespace Utils
   }
 
 
-  void  File::createDir(const char* dir, __mode_t mode)
+  void  File::createDir(const char* dir, mode_t mode)
   {
     struct stat   st;
 
