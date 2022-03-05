@@ -73,7 +73,7 @@ all:
 
 $(NAME):			$(OBJS)
 					@echo "$(FMT_BOLD)Linking files...$(FMT_DEF)"
-					$(CC) $(OBJS) $(CFLAGS) -o $@
+					@$(CC) $(OBJS) $(CFLAGS) -o $@
 					@echo "$(FMT_WHITE_B)'$(NAME)'$(FMT_BOLD) has been created/updated.$(FMT_DEF)"
 
 $(OBJS_DIR)/%.o:	%.cpp | $(OBJS_DIR)

@@ -71,7 +71,7 @@ namespace WS { namespace Http
   }
 
 
-  std::string  Parser::serializeResponse(const Response& data)
+  std::string  Parser::serializeResponse(const Response& data, bool ending)
   {
     Utils::Logger::debug("Http::Parser::serializeResponse"); // < DEBUG
 
@@ -95,8 +95,11 @@ namespace WS { namespace Http
       ss << "Content-Length: " << data.body.size();
     }
     
-    ss << "\r\n\r\n" // empty line between headers and body
-      << data.body;
+    if (ending)
+    {
+      ss << "\r\n\r\n" // empty line between headers and body
+        << data.body;
+    }
 
     /// Return
     return ss.str();

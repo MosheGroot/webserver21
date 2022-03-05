@@ -44,46 +44,52 @@ namespace WS { namespace Core
   /// Response
     /* @brief Creates response based on client's request for targeted server and location inside it
     */
-    static Http::Response      createResponse(const Http::Request& request, 
+    static std::string      createResponse(const Http::Request& request, 
                                               const Config::ServerConfig* server,
                                               const Config::ServerLocation* location);
 
     /* @brief Creates response with error page specified in server's config 
     */
-    static Http::Response      createErrorResponse(Http::StatusCode code,
+    static std::string      createErrorResponse(Http::StatusCode code,
                                                     const Http::Request& request, 
                                                     const Config::ServerConfig* server);
 
     /* @brief Creates response with default page  
     */
-    static Http::Response      createDefaultPageResponse(void);
+    static std::string      createDefaultPageResponse(void);
 
     /* @brief Creates redirect response to specified redirect_url  
     */
-    static Http::Response      createRedirectResponse(const std::string& redirect_url);
+    static std::string      createRedirectResponse(const std::string& redirect_url);
+
+    /* @brief Creates CGI response for specific CGI
+    */
+    static std::string      createCGIResponse(const Http::Request& request,
+                                              const Config::ServerConfig* server,
+                                              const Config::ServerLocation* location);
 
 
   /// Methods
-    static Http::Response           responseFromGet(const std::string& absolute_path,
-                                                      const Http::Request& request, 
-                                                      const Config::ServerConfig* server,
-                                                      const Config::ServerLocation* location);
+    static std::string      responseFromGet(const std::string& absolute_path,
+                                              const Http::Request& request, 
+                                              const Config::ServerConfig* server,
+                                              const Config::ServerLocation* location);
 
-    static Http::Response           responseFromPost(const std::string& absolute_path,
-                                                      const Http::Request& request, 
-                                                      const Config::ServerConfig* server,
-                                                      const Config::ServerLocation* location);
+    static std::string      responseFromPost(const std::string& absolute_path,
+                                              const Http::Request& request, 
+                                              const Config::ServerConfig* server,
+                                              const Config::ServerLocation* location);
 
-    static Http::Response           responseFromDelete(const std::string& absolute_path,
-                                                        const Http::Request& request, 
-                                                        const Config::ServerConfig* server,
-                                                        const Config::ServerLocation* location);
+    static std::string      responseFromDelete(const std::string& absolute_path,
+                                                const Http::Request& request, 
+                                                const Config::ServerConfig* server,
+                                                const Config::ServerLocation* location);
 
   /// Index
-    static Http::Response   responseFromLocationIndex(const std::string& absolute_path,
+    static std::string   responseFromLocationIndex(const std::string& absolute_path,
                                                       const Config::ServerLocation* location);
 
-    static Http::Response   responseFromAutoIndex(std::string absolute_path);
+    static std::string   responseFromAutoIndex(std::string absolute_path);
 
 
   /// Utils

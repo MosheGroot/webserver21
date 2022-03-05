@@ -34,7 +34,7 @@ namespace WS { namespace Utils {
         std::cout << "    path      " << conf.server_list[i].location_list[j].path << '\n';
         std::cout << "    root      " << conf.server_list[i].location_list[j].root << '\n';
         std::cout << "    cgi_path  " << conf.server_list[i].location_list[j].cgi_path << '\n';
-        std::cout << "    cgi_pass  " << conf.server_list[i].location_list[j].cgi_pass << '\n';
+        std::cout << "    redirect  " << conf.server_list[i].location_list[j].redirect << '\n';
 
         std::cout << "    method    ";
         int l = (int)conf.server_list[i].location_list[j].method.size();

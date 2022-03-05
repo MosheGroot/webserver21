@@ -18,7 +18,6 @@ namespace WS { namespace Config
     std::string autoindex;
 
     std::string cgi_path;
-    std::string cgi_pass;
     
     std::string redirect;
 

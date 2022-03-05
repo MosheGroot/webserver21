@@ -36,13 +36,13 @@ namespace WS { namespace Config
       int len = (int)result.size();
       if (result[0] == "listen" && len == 2)
         new_server.ip_addr = result[1];
+      else if (result[0] == "port" && len == 2)
+        new_server.port = result[1];
       else if (result[0] == "server_name" && len > 1)
       {
         for (int i = 1; i < len; i++) 
           new_server.server_name.push_back(result[i]);
       }
-      else if (result[0] == "port" && len == 2)
-        new_server.port = result[1];
       else if (result[0] == "buff_size_body" && len == 2)
         new_server.buff_size_body = result[1];
       else if (result[0] == "error_page")
@@ -113,19 +113,15 @@ namespace WS { namespace Config
       }
       else if (result[0] == "cgi_path" && len == 2)
         new_location.cgi_path = result[1];
-      else if (result[0] == "cgi_pass" && len == 2)
-        new_location.cgi_pass = result[1];
       else if (result[0] == "redirect" && len == 2)
-      {
         new_location.redirect = result[1];
-      }
       else if (result[0] == "location" && len == 2)
       {
         out.location_list.push_back(new_location);
         new_location.path = result[1];
         new_location.root = "";
-        new_location.cgi_pass = "";
         new_location.cgi_path = "";
+        new_location.redirect = "";
         new_location.method.clear();
       }
       else if (len == 0)

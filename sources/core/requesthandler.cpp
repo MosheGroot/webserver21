@@ -1,5 +1,6 @@
 #include "../../headers/core/requesthandler.hpp"
 #include "../../headers/core/pagegenerator.hpp"
+#include "../../headers/cgi/cgi.hpp"
 #include "../../headers/utils/logger.hpp"
 #include "../../headers/utils/file.hpp"
 #include "../../headers/utils/string.hpp"
@@ -19,14 +20,16 @@ namespace WS { namespace Core {
   {
     Utils::Logger::debug("RequestHandler::handle"); // < DEBUG
     
-    const Http::Request           request = Http::Parser::deserializeRequest(raw_request);
+    Http::Request                 request;
     const Config::ServerConfig*   server = NULL;
     const Config::ServerLocation* location = NULL;
 
-    Http::Response  response;
+    std::string  response;
     
     try
     {
+      request = Http::Parser::deserializeRequest(raw_request);
+
       if (conf.server_list.size() == 0)
       {
         response = RequestHandler::createDefaultPageResponse();
@@ -47,7 +50,7 @@ namespace WS { namespace Core {
       response = RequestHandler::createErrorResponse(Http::InternalServerError, request, server);
     }
 
-    return Http::Parser::serializeResponse(response);
+    return response;
   }
 
 
@@ -108,21 +111,27 @@ namespace WS { namespace Core {
 
 
   /// Response
-  Http::Response             RequestHandler::createResponse(const Http::Request& request, 
+  std::string             RequestHandler::createResponse(const Http::Request& request, 
                                                                 const Config::ServerConfig* server,
                                                                 const Config::ServerLocation* location)
   {
     Utils::Logger::debug("RequestHandler::createResponse"); // < DEBUG
 
-    if (location && !methodIsAllowed(request, *location)) // method is not allowed
-      return RequestHandler::createErrorResponse(Http::MethodNotAllowed, request, server);
+    if (location)
+    {
+      if (!methodIsAllowed(request, *location))
+        return RequestHandler::createErrorResponse(Http::MethodNotAllowed, request, server);
 
-    if (location && !location->redirect.empty()) // redirect
-      return RequestHandler::createRedirectResponse(location->redirect);
+      if (!location->redirect.empty()) // redirect
+        return RequestHandler::createRedirectResponse(location->redirect);
+
+      if (location && !location->cgi_path.empty())
+        return RequestHandler::createCGIResponse(request, server, location);
+    }
 
     std::string path = RequestHandler::getAbsolutePath(request, location);
 
-    Http::Response response;
+    std::string response;
     if (request.method == Http::GET)
       response = responseFromGet(path, request, server, location);
     else if (request.method == Http::POST)
@@ -134,12 +143,19 @@ namespace WS { namespace Core {
   }
 
 
-  Http::Response             RequestHandler::createErrorResponse(Http::StatusCode code,
+  std::string             RequestHandler::createErrorResponse(Http::StatusCode code,
                                                                 const Http::Request& request, 
                                                                 const Config::ServerConfig* server)
   {
     Utils::Logger::debug("RequestHandler::createErrorResponse"); // < DEBUG
-    Utils::Logger::error(request.headers.at("Host") + request.uri + ": " + Http::Parser::statusToString(code));
+    try
+    {
+      Utils::Logger::error(request.headers.at("Host") + request.uri + ": " + Http::Parser::statusToString(code));
+    }
+    catch(...)
+    {
+    }
+    
 
     Http::Response  response;
     response.version = "HTTP/1.1";
@@ -157,11 +173,11 @@ namespace WS { namespace Core {
       response.body = PageGenerator::generateErrorPage();
     }
 
-    return response;
+    return Http::Parser::serializeResponse(response);
   }
 
 
-  Http::Response             RequestHandler::createDefaultPageResponse()
+  std::string             RequestHandler::createDefaultPageResponse()
   {
     Utils::Logger::debug("RequestHandler::createDefaultPageResponse"); // < DEBUG
     Http::Response  response;
@@ -172,11 +188,11 @@ namespace WS { namespace Core {
 
     response.headers.insert(std::make_pair("Content-Type", "text/html"));
 
-    return response;
+    return Http::Parser::serializeResponse(response);
   }
 
   
-  Http::Response      RequestHandler::createRedirectResponse(const std::string& redirect_url)
+  std::string      RequestHandler::createRedirectResponse(const std::string& redirect_url)
   {
     Http::Response  response;
 
@@ -185,14 +201,44 @@ namespace WS { namespace Core {
 
     response.headers.insert(std::make_pair("Location", redirect_url));
 
-    return response;
+    return Http::Parser::serializeResponse(response);
   }
 
+  std::string      RequestHandler::createCGIResponse(const Http::Request& request,
+                                                      const Config::ServerConfig* server,
+                                                      const Config::ServerLocation* location)
+  {
+    /// Get script path
+    std::string script_path;
 
+    if (location->cgi_path[0] != '/')
+      script_path = Utils::File::getCurrentDir() + '/' + location->cgi_path;
+    else
+      script_path = location->cgi_path;
+
+    Utils::Logger::debug("CGI SCRIPT PATH : " + script_path); // < DEBUG
+
+    if (!Utils::File::fileExists(script_path.c_str())) // config error
+      return createErrorResponse(Http::InternalServerError, request, server);
+
+
+    /// Exec CGI
+    std::string cgi_response;
+
+    cgi_response = CGI::Handler::instance_.exec(script_path, request, *server);    
+    Utils::Logger::info("{" + cgi_response + "}");
+
+    /// Get response
+    Http::Response  response;
+    response.version = "HTTP/1.1";
+    response.status_code = Http::Ok;
+
+    return Http::Parser::serializeResponse(response, false) + cgi_response;
+  }
 
   /// Methods
 
-  Http::Response    RequestHandler::responseFromGet(const std::string& absolute_path,
+  std::string    RequestHandler::responseFromGet(const std::string& absolute_path,
                                                       const Http::Request& request,
                                                       const Config::ServerConfig* server,
                                                       const Config::ServerLocation* location)
@@ -202,6 +248,7 @@ namespace WS { namespace Core {
     /// case 1. Location processing
     Utils::Logger::debug("Absolute path : " + absolute_path); // < DEBUG
     Utils::Logger::debug("Location path : " + location->path); // < DEBUG
+
     if (location && (
       Utils::File::isDir(absolute_path.c_str())
       || !location->index.empty()))
@@ -253,10 +300,10 @@ namespace WS { namespace Core {
       RequestHandler::getContentType(absolute_path)
     ));
 
-    return response;
+    return Http::Parser::serializeResponse(response);
   }
 
-  Http::Response    RequestHandler::responseFromPost(const std::string& absolute_path,
+  std::string    RequestHandler::responseFromPost(const std::string& absolute_path,
                                                       const Http::Request& request, 
                                                       const Config::ServerConfig* server,
                                                       const Config::ServerLocation* location)
@@ -273,7 +320,7 @@ namespace WS { namespace Core {
     return createErrorResponse(Http::NotImplemented, request, server);
   }
 
-  Http::Response    RequestHandler::responseFromDelete(const std::string& absolute_path,
+  std::string    RequestHandler::responseFromDelete(const std::string& absolute_path,
                                                         const Http::Request& request, 
                                                         const Config::ServerConfig* server,
                                                         const Config::ServerLocation* location)
@@ -308,11 +355,11 @@ namespace WS { namespace Core {
       response.status_code = Http::NoContent;
     }
 
-    return response;
+    return Http::Parser::serializeResponse(response);
   }
 
   /// Index
-  Http::Response    RequestHandler::responseFromLocationIndex(const std::string& absolute_path,
+  std::string    RequestHandler::responseFromLocationIndex(const std::string& absolute_path,
                                                               const Config::ServerLocation* location)
   {
     Utils::Logger::debug("RequestHandler::responseFromLocationIndex"); // < DEBUG
@@ -345,10 +392,10 @@ namespace WS { namespace Core {
       RequestHandler::getContentType(location->index[i_file])
     ));
 
-    return response;
+    return Http::Parser::serializeResponse(response);
   }
 
-  Http::Response    RequestHandler::responseFromAutoIndex(std::string absolute_path)
+  std::string    RequestHandler::responseFromAutoIndex(std::string absolute_path)
   {
     Utils::Logger::debug("RequestHandler::responseFromAutoIndex"); // < DEBUG
     Http::Response  response;
@@ -359,7 +406,7 @@ namespace WS { namespace Core {
     response.body = PageGenerator::generateIndexPage(absolute_path);
     response.headers.insert(std::make_pair("Content-Type", "text/html"));
 
-    return response;
+    return Http::Parser::serializeResponse(response);
   }
 
   /// Utils

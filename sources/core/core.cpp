@@ -190,8 +190,10 @@ namespace WS { namespace Core
 
   void  Server::sendMsg(int socket_to_send, const char* msg, int msg_size) const
   {
-    if (send(socket_to_send, msg, msg_size, 0) == -1)
+    int ret;
+    if ((ret = send(socket_to_send, msg, msg_size, 0)) == -1)
       throw std::runtime_error("Can't send() message to the client: " + std::string(strerror(errno))); // It's a regular error, not an exception
+    std::cout << "{{{{{{" << ret << " | " << msg_size << "}}}}}}}}}" << std::endl;
   }
 
   void  Server::closeListeningSockets() const
@@ -201,7 +203,7 @@ namespace WS { namespace Core
       if (close(listening_socket_[i]) == -1)
         throw std::runtime_error("Can't close a listening socket: " + std::string(strerror(errno)));
     }
-    
+
   }
 
 }} //!namespace WS::Core

@@ -26,11 +26,12 @@ namespace WS { namespace Http
 
     /* @brief Function for serializing server Response to ready-to-send
         data in std::string container.
-       @param[in] data  string with raw data to parse
+       @param[in] data    string with raw data to parse
+       @param[in] ending  is 'r\n\r\n' between headers and body required (helpfull for CGI)
        @return          filled Response structure.
        Raw serialized request in std::string container
     */
-    static std::string  serializeResponse(const Response& data);
+    static std::string  serializeResponse(const Response& data, bool ending=true);
 
 
     static Method       stringToMethod(const std::string& source);
