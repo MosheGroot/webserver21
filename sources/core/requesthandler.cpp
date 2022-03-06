@@ -71,11 +71,11 @@ namespace WS { namespace Core {
 
       if (curr.ip_addr == ip && curr.port == port)
       {
-        std::vector<std::string>::const_iterator res = std::find(
-          curr.server_name.begin(), curr.server_name.end(), request.headers.at("Host"));
+        const std::string& host = request.headers.at("Host");
+        for (size_t i = 0; i < curr.server_name.size(); ++i)
+          if (curr.server_name[i] + ":" + curr.port == host)
+            return &curr;
 
-        if (res != curr.server_name.end())
-          return &curr;
         if (!default_server)
           default_server = &curr;
       }  
