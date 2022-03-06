@@ -43,8 +43,8 @@ namespace WS { namespace Config
         for (int i = 1; i < len; i++) 
           new_server.server_name.push_back(result[i]);
       }
-      else if (result[0] == "buff_size_body" && len == 2)
-        new_server.buff_size_body = result[1];
+      else if (result[0] == "max_body_size" && len == 2)
+        new_server.max_body_size = result[1];
       else if (result[0] == "error_page")
       {
         const std::string& error_page_uri = result[result.size() - 1];

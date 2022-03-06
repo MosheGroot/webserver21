@@ -21,7 +21,7 @@ namespace WS { namespace Config
 
     std::map<Http::StatusCode, std::string> error_page;
     
-    std::string buff_size_body;
+    std::string max_body_size;
 
     std::vector<ServerLocation> location_list;
 

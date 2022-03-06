@@ -19,19 +19,20 @@ namespace WS { namespace Core {
                                       const Config::Config& conf)
   {
     Utils::Logger::debug("RequestHandler::handle"); // < DEBUG
-    
+
     Http::Request                 request;
     const Config::ServerConfig*   server = NULL;
     const Config::ServerLocation* location = NULL;
 
     std::string  response;
-    
+
     try
     {
       request = Http::Parser::deserializeRequest(raw_request);
 
       if (conf.server_list.size() == 0)
       {
+        // imposible
         response = RequestHandler::createDefaultPageResponse();
       }
       else
@@ -208,9 +209,10 @@ namespace WS { namespace Core {
                                                       const Config::ServerConfig* server,
                                                       const Config::ServerLocation* location)
   {
-    (void)request;
-    (void)server;
-    (void)location;
+    /// Check max body size
+    if (request.body.size() > static_cast<size_t>(::atoi(server->max_body_size.c_str())))
+      return RequestHandler::createErrorResponse(Http::PayloadTooLarge, request, server);
+
 
     /// Get script path
     std::string script_path;
@@ -235,9 +237,6 @@ namespace WS { namespace Core {
     response.version = "HTTP/1.1";
     response.status_code = Http::Ok;
 
-    // response.body = "<html><title>TESTTTTTT</title></html>\n";
-
-    // return Http::Parser::serializeResponse(response);
     return Http::Parser::serializeResponse(response) + cgi_response;
   }
 
@@ -314,14 +313,13 @@ namespace WS { namespace Core {
                                                       const Config::ServerLocation* location)
   {
     Utils::Logger::debug("RequestHandler::responseFromPost"); // < DEBUG
-    
-    size_t dot = absolute_path.rfind('.');
-    std::string ext = absolute_path.substr(dot);
 
+    // check max body size
+    if (request.body.size() > static_cast<size_t>(::atoi(server->max_body_size.c_str())))
+      return RequestHandler::createErrorResponse(Http::PayloadTooLarge, request, server);
+
+    (void)absolute_path;
     (void)location;
-
-    /// CGI
-
     return createErrorResponse(Http::NotImplemented, request, server);
   }
 

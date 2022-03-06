@@ -21,7 +21,7 @@ namespace WS { namespace Utils {
       std::cout << std::endl;
 
       std::cout << "port            " << conf.server_list[i].port << '\n';
-      std::cout << "buff_size_body  " << conf.server_list[i].buff_size_body << '\n';
+      std::cout << "max_body_size  " << conf.server_list[i].max_body_size << '\n';
       
       std::map<Http::StatusCode, std::string>::const_iterator it;
       for (it = conf.server_list[i].error_page.begin(); it != conf.server_list[i].error_page.end(); ++it)
