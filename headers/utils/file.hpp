@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <sys/stat.h>
 
 namespace WS { namespace Utils
 {
