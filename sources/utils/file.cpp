@@ -100,16 +100,25 @@ namespace WS { namespace Utils
   {
     struct stat st;
 
-    stat(path, &st);
+    if (stat(path, &st) != 0 || S_ISREG(st.st_mode)) // doesnt exists or file
+      return false;
     return S_ISDIR(st.st_mode) != 0;
   }
 
-
-  bool  File::fileExists(const char *path)
+  bool   File::isFile(const char *path)
   {
-    struct stat buff;
+    struct stat st;
 
-    return (stat(path, &buff) == 0);
+    if (stat(path, &st) != 0) // doesnt exists
+      return false;
+    return S_ISREG(st.st_mode) != 0;
+  }
+
+  bool  File::pathExists(const char *path)
+  {
+    struct stat st;
+
+    return (stat(path, &st) == 0);
   }
 
   std::string   File::getCurrentDir(void)

@@ -50,9 +50,13 @@ namespace WS { namespace Utils
     */
     static bool         isDir(const char *path);
 
+    /* @brief Check if path is a directory
+    */
+    static bool         isFile(const char *path);
+
     /* @brief Check is file exists
     */
-    static bool         fileExists(const char *path);
+    static bool         pathExists(const char *path);
     
     /* @brief Get current work directory (exec pwd)
     */

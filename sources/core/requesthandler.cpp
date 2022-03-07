@@ -218,7 +218,7 @@ namespace WS { namespace Core {
 
     Utils::Logger::debug("CGI SCRIPT PATH : " + script_path); // < DEBUG
 
-    if (!Utils::File::fileExists(script_path.c_str())) // config error
+    if (!Utils::File::pathExists(script_path.c_str())) // config error
       return createErrorResponse(Http::InternalServerError, request, server);
 
 
@@ -247,26 +247,14 @@ namespace WS { namespace Core {
     Utils::Logger::debug("Absolute path : " + absolute_path); // < DEBUG
     Utils::Logger::debug("Location path : " + location->path); // < DEBUG
 
-    if (location && (
-      Utils::File::isDir(absolute_path.c_str())
-      || !location->index.empty()))
+    if (location && Utils::File::isDir(absolute_path.c_str()))
     {
       Utils::Logger::debug("RequestHandler::responseFromGet CASE 1"); // < DEBUG
-      try
-      {
-        return responseFromLocationIndex(absolute_path, request, *location);
-      }
-      catch(const Utils::Exceptions::FileDoesNotExist& e)
-      {
-        if (location->autoindex == "on")
-          return responseFromAutoIndex(absolute_path, request);
 
-        return createErrorResponse(Http::NotFound, request, server);
-      }
-      catch(...)
-      {
-        throw;
-      }
+      if (!location->index.empty())
+        return responseFromLocationIndex(absolute_path, request, *location);
+      else if (location->autoindex == "on")
+        return responseFromAutoIndex(absolute_path, request);
     }
 
     /// case 2. Open file
@@ -316,7 +304,7 @@ namespace WS { namespace Core {
     // create response
     Http::Response  response;
 
-    if (Utils::File::fileExists(absolute_path.c_str()))
+    if (Utils::File::pathExists(absolute_path.c_str()))
     {
       Utils::File::writeFile(request.body, absolute_path.c_str(), true);
       response.status_code = Http::NoContent;
@@ -337,7 +325,7 @@ namespace WS { namespace Core {
   {
     Utils::Logger::debug("RequestHandler::responseFromDelete"); // < DEBUG
 
-    if (!Utils::File::fileExists(absolute_path.c_str()))
+    if (!Utils::File::pathExists(absolute_path.c_str()))
       return RequestHandler::createErrorResponse(Http::NotFound, request, server);
     if (Utils::File::isDir(absolute_path.c_str()))
       return RequestHandler::createErrorResponse(Http::Conflict, request, server);
@@ -372,7 +360,7 @@ namespace WS { namespace Core {
     size_t i_file;
     for (i_file = 0; i_file < location.index.size(); ++i_file)
     {
-      if (Utils::File::fileExists((absolute_path + location.index[i_file]).c_str()))
+      if (Utils::File::pathExists((absolute_path + location.index[i_file]).c_str()))
         break;
     }
 
@@ -422,13 +410,19 @@ namespace WS { namespace Core {
     if (location && !location->root.empty())
     {
       Utils::Logger::debug("RequestHandler::getAbsolutePath CASE 1"); // < DEBUG
-      std::string subpath = request.uri;
 
-      subpath.erase(0, location->path.size());
-
+      // prefix
+      std::string prefix;
       if (location->root[0] != '/')
-        return Utils::File::getCurrentDir() + "/" + location->root + subpath;
-      return location->root + subpath;
+        prefix = Utils::File::getCurrentDir() + "/" + location->root;
+      prefix = location->root;
+      
+      // uri
+      std::string subpath = request.uri;
+      if (!Utils::File::pathExists((prefix + request.uri).c_str()))
+        subpath.erase(0, location->path.size());
+
+      return prefix + subpath;
     }
 
     // case 2. default (work dir + uri)
