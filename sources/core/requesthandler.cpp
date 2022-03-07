@@ -16,7 +16,8 @@ namespace WS { namespace Core {
   std::string  RequestHandler::handle(const std::string& raw_request, 
                                       const std::string& ip, 
                                       const std::string& port, 
-                                      const Config::Config& conf)
+                                      const Config::Config& conf,
+                                      int& connection_status)
   {
     Utils::Logger::debug("RequestHandler::handle"); // < DEBUG
 
@@ -29,6 +30,14 @@ namespace WS { namespace Core {
     try
     {
       request = Http::Parser::deserializeRequest(raw_request);
+
+      if (request.headers.find("Connection") != request.headers.end())
+      {
+        if (request.headers.at("Connection") == "close")
+          connection_status = CONNECTION_CLOSE;
+        else
+          connection_status = CONNECTION_KEEPALIVE;
+      }
 
       if (conf.server_list.size() == 0)
       {

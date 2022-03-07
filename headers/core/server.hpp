@@ -6,7 +6,9 @@
 #include <map>
 #include <sys/select.h> 
 
+
 #define CLIENT_DISCONNECTED -1
+
 
 #include "./requesthandler.hpp"
 #include "../../headers/config/config.hpp"
@@ -87,7 +89,7 @@ namespace WS { namespace Core
 
     /* @brief Handle a message recieved from a client
       */
-    void  handleMsg(std::string msg, int msg_owner) const;
+    int   handleMsg(std::string msg, int msg_owner);
 
     /* @brief Send a message to a client
       */

@@ -5,6 +5,11 @@
 #include "../config/models/location.hpp"
 #include "../config/models/config.hpp"
 
+
+#define CONNECTION_CLOSE     -1
+#define CONNECTION_KEEPALIVE  0
+
+
 namespace WS { namespace Core
 {
   /* @brief Handler for client's requests
@@ -23,7 +28,8 @@ namespace WS { namespace Core
     static std::string  handle(const std::string& raw_request, 
                                 const std::string& ip, 
                                 const std::string& port, 
-                                const Config::Config& conf);
+                                const Config::Config& conf,
+                                int& connection_status);
 
 
   private:

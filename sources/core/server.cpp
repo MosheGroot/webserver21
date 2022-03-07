@@ -36,7 +36,7 @@ namespace WS { namespace Core
   void    Server::initConfig(const char* config_path)
   {
     WS::Config::Parser::parseFile(config_path, const_cast<Config::Config&>(this->conf_));
-    WS::Utils::Debug::printConf(this->conf_); // < DEBUG
+    // WS::Utils::Debug::printConf(this->conf_); // < DEBUG
   }
 
 
@@ -184,7 +184,7 @@ namespace WS { namespace Core
 
     if ((new_client_socket = accept(listening_socket, (sockaddr *)&client, &client_size)) == -1)
       throw std::runtime_error("Can't accept() the client: " + std::string(strerror(errno)));
-    ss << "Client #" << new_client_socket << " has been accepted" << std::endl;
+    ss << "Client #" << new_client_socket << " has been accepted";
     Utils::Logger::instance_.info(ss.str());
 
     ss1 << "Client #" << new_client_socket << ": " << inet_ntoa(client.sin_addr) << ":" << htons(client.sin_port); // remove!
@@ -206,7 +206,7 @@ namespace WS { namespace Core
     std::stringstream ss;
 
     if (close(client_socket) == -1)
-          throw std::runtime_error("Can't close() the client's connection: " + std::string(strerror(errno)));
+      throw std::runtime_error("Can't close() the client's connection: " + std::string(strerror(errno)));
     FD_CLR(client_socket, &master_set_);
     ss << "Client #" << client_socket << " has disconnected";
     Utils::Logger::instance_.info(ss.str());
@@ -215,7 +215,7 @@ namespace WS { namespace Core
 
   //  Recieve and send
 
-  void  Server::handleMsg(std::string msg, int socket_recv_from) const
+  int   Server::handleMsg(std::string msg, int socket_recv_from)
   {
     Utils::Logger::debug("#" + Utils::String::to_string(socket_recv_from) + "Recieved: " + msg); // < DEBUG
 
@@ -223,11 +223,13 @@ namespace WS { namespace Core
     const Server::ConnectionInfo* info = socket_infos_.at(socket_recv_from);
 
     // make response
+    int connection_status;
     std::string response = RequestHandler::handle(
       msg,
       info->ip_addr,
       info->port,
-      this->conf_);
+      this->conf_,
+      connection_status);
 
     // send response
     Utils::Logger::instance_.debug("SENDING RESPONSE");         // < DEBUG
@@ -236,12 +238,19 @@ namespace WS { namespace Core
     sendMsg(socket_recv_from, response.c_str(), response.size());
 
     Utils::Logger::instance_.debug("RESPONSE HAS BEEN SENDED"); // < DEBUG
+
+    if (connection_status == CONNECTION_CLOSE)
+    {
+      handleDisconnection(socket_recv_from);
+      return CLIENT_DISCONNECTED;
+    }
+    return CONNECTION_KEEPALIVE;
   }
 
   int  Server::recvMsg(int socket_recv_from)
   {
     std::string       request;
-    char              buffer[50]; // max_body_size + header
+    char              buffer[64]; // max_body_size + header
     int               ret_bytes;
 
     // recieve
@@ -262,8 +271,7 @@ namespace WS { namespace Core
       }
       default:
       {
-        handleMsg(request, socket_recv_from); // if any errors -> disconnect
-        return 0;
+        return handleMsg(request, socket_recv_from); // if any errors -> disconnect
       }
     }
   }
