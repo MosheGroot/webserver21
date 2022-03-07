@@ -15,6 +15,7 @@ namespace WS { namespace Http
     //      https://www.ibm.com/docs/en/cics-ts/5.2?topic=protocol-http-responses
 
   public:
+  /// General
     // start-line
     std::string   version;        //> http version of response
     StatusCode    status_code;    //> status code of response
@@ -24,6 +25,12 @@ namespace WS { namespace Http
 
     // body
     std::string body;   //> body of response (can be empty)
+
+
+  /// Constructors
+    Response() : version("HTTP/1.1") {}
+
+    Response(StatusCode status) : version("HTTP/1.1"), status_code(status) {}
 
   }; //!class Response
 }} //!namespace WS::Http

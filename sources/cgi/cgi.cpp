@@ -74,7 +74,7 @@ namespace WS { namespace CGI
     /// Server
     addHeaderToEnv(request, "Host", "SERVER_NAME");    
     env_["SERVER_PORT"] = server.port;
-    env_["SERVER_PROTOCOL"] = "HTTP/1.1";
+    env_["SERVER_PROTOCOL"] = request.version;
     env_["SERVER_SOFTWARE"] = "webserv/1.0";
   }
 

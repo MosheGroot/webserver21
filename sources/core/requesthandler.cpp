@@ -158,9 +158,7 @@ namespace WS { namespace Core {
     }
     
 
-    Http::Response  response;
-    response.version = "HTTP/1.1";
-    response.status_code = code;
+    Http::Response  response(code);
 
     if (server && server->error_page.find(code) != server->error_page.end())
     {
@@ -181,9 +179,7 @@ namespace WS { namespace Core {
   std::string             RequestHandler::createDefaultPageResponse()
   {
     Utils::Logger::debug("RequestHandler::createDefaultPageResponse"); // < DEBUG
-    Http::Response  response;
-    response.version = "HTTP/1.1";
-    response.status_code = Http::Ok;
+    Http::Response  response(Http::Ok);
     
     response.body = PageGenerator::generateDefaultPage();
 
@@ -195,10 +191,7 @@ namespace WS { namespace Core {
   
   std::string      RequestHandler::createRedirectResponse(const std::string& redirect_url)
   {
-    Http::Response  response;
-
-    response.version = "HTTP/1.1";
-    response.status_code = Http::MovedPermanently;
+    Http::Response  response(Http::MovedPermanently);
 
     response.headers.insert(std::make_pair("Location", redirect_url));
 
@@ -235,9 +228,7 @@ namespace WS { namespace Core {
     return RequestHandler::createErrorResponse(Http::BadRequest, request, server);
 
     /// Get response
-    Http::Response  response;
-    response.version = "HTTP/1.1";
-    response.status_code = Http::Ok;
+    Http::Response  response(Http::Ok);
 
     (void)location;
     return Http::Parser::serializeResponse(response);
@@ -296,10 +287,7 @@ namespace WS { namespace Core {
     }
 
     // generate response
-    Http::Response response;
-
-    response.version = "HTTP/1.1";
-    response.status_code = Http::Ok;
+    Http::Response response(Http::Ok);
 
     response.body = data;
 
@@ -328,8 +316,6 @@ namespace WS { namespace Core {
     // create response
     Http::Response  response;
 
-    response.version = "HTTP/1.1";
-
     if (Utils::File::fileExists(absolute_path.c_str()))
     {
       Utils::File::writeFile(request.body, absolute_path.c_str(), true);
@@ -356,8 +342,6 @@ namespace WS { namespace Core {
       return RequestHandler::createErrorResponse(Http::Conflict, request, server);
 
     Http::Response response;
-
-    response.version = "HTTP/1.1";
 
     std::string data = Utils::File::readFile(absolute_path.c_str());
     ::remove(absolute_path.c_str());
@@ -395,10 +379,7 @@ namespace WS { namespace Core {
     }
 
     // Response generating
-    Http::Response response;
-
-    response.version = "HTTP/1.1";
-    response.status_code = Http::Ok;
+    Http::Response response(Http::Ok);
 
     response.body = Utils::File::readFile((absolute_path + location->index[i_file]).c_str());
 
@@ -413,10 +394,7 @@ namespace WS { namespace Core {
   std::string    RequestHandler::responseFromAutoIndex(std::string absolute_path)
   {
     Utils::Logger::debug("RequestHandler::responseFromAutoIndex"); // < DEBUG
-    Http::Response  response;
-
-    response.version = "HTTP/1.1";
-    response.status_code = Http::Ok;
+    Http::Response  response(Http::Ok);
 
     response.body = PageGenerator::generateIndexPage(absolute_path);
     response.headers.insert(std::make_pair("Content-Type", "text/html"));
