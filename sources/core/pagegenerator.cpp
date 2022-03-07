@@ -33,51 +33,66 @@ namespace WS { namespace Core {
   }
 
 
-  std::string  PageGenerator::generateIndexPage(std::string path)
+  std::string  PageGenerator::generateIndexPage(const std::string& absolute_path,
+                                                std::string request_uri)
   {
-    Utils::Logger::debug("PageGenerator::generateIndexPage"); // < DEBUG
-    
-    DIR *dir;
-    struct dirent *entry;
+    Utils::Logger::debug("PageGenerator::generateIndexPage");       // < DEBUG
+    Utils::Logger::debug("Index absolute_path : " + absolute_path); // < DEBUG
+    Utils::Logger::debug("Index request uri   : " + request_uri);  // < DEBUG
 
-    Utils::Logger::debug(path);
-    dir = opendir(path.c_str());
+    // Create update request uri dir
+    if (request_uri[request_uri.size() - 1] != '/')
+      request_uri.push_back('/');
+
+    // Open dir
+    DIR *dir;
+    dir = opendir(absolute_path.c_str());
     if (!dir)
       throw std::invalid_argument("generateIndexPage exception: directory does not exists");
 
-    if (path[path.size() - 1] != '/')
-      path.push_back('/');
+    /// Generate page
+    // output stream
+    std::stringstream ss;
 
-    std::stringstream out("autoindex.html");
-    out << "<!DOCTYPE html>\n"
+    // headers and styles
+    ss << "<!DOCTYPE html>\n"
             "<html>\n"
             "<style>\n"
               "html { color-scheme: light dark; }\n"
               "body { width: 35em; margin: 0 auto;\n"
               "font-family: Tahoma, Verdana, Arial, sans-serif; }\n"
             "</style>\n"
-           "<title> Index of " << path << "</title>\n"
+           "<title> Index of " << request_uri << "</title>\n"
            "<body>\n"
-           "<div>\n"
-           "<h1>Index of ";
+           "<div>\n";
 
-    std::string host_(path);
-    out << path;
-    out << "</h1>" << '\n';
-    out << "<hr>"                                    << '\n';
-    while ((entry = readdir(dir)) != NULL) {
-      out << "<p><a href=\"" << host_ + entry->d_name << "\">";
-      out << entry->d_name;
-      if (entry->d_type & DT_DIR)
-        out << "/";
-      out << "</a></p>" << '\n';
+    // header text
+    ss << "<h1>Index of " << request_uri << "</h1>\n";
+
+    // List block
+    ss << "<hr>\n"
+          "<pre>\n";
+
+    for (struct dirent *dirEntry = readdir(dir); dirEntry; dirEntry = readdir(dir)) {
+      ss << "<p><a href=\"" << request_uri + dirEntry->d_name << "\">";
+
+      ss << dirEntry->d_name;
+      if (dirEntry->d_type & DT_DIR)
+        ss << "/";
+
+      ss << "</a></p>" << '\n';
     }
-    out << "</div>\n" 
+    closedir(dir);
+
+    ss << "</pre>\n"
+          "</hr>\n";
+
+    // ending
+    ss << "</div>\n"
            "</body>\n"
            "</html>";
 
-    closedir(dir);
-    return out.str();
+    return ss.str();
   }
 
 }};

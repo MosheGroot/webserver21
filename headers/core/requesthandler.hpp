@@ -83,11 +83,14 @@ namespace WS { namespace Core
                                                 const Http::Request& request, 
                                                 const Config::ServerConfig* server);
 
+
   /// Index
     static std::string   responseFromLocationIndex(const std::string& absolute_path,
-                                                      const Config::ServerLocation* location);
+                                                    const Http::Request& request,
+                                                    const Config::ServerLocation& location);
 
-    static std::string   responseFromAutoIndex(std::string absolute_path);
+    static std::string   responseFromAutoIndex(const std::string& absolute_path,
+                                                const Http::Request& request);
 
 
   /// Utils

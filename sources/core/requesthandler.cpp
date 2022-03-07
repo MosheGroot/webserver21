@@ -198,6 +198,7 @@ namespace WS { namespace Core {
     return Http::Parser::serializeResponse(response);
   }
 
+
   std::string      RequestHandler::createCGIResponse(const Http::Request& request,
                                                       const Config::ServerConfig* server,
                                                       const Config::ServerLocation* location)
@@ -231,6 +232,8 @@ namespace WS { namespace Core {
     return Http::Parser::serializeResponse(response, false) + cgi_response;
   }
 
+
+
   /// Methods
 
   std::string    RequestHandler::responseFromGet(const std::string& absolute_path,
@@ -251,12 +254,12 @@ namespace WS { namespace Core {
       Utils::Logger::debug("RequestHandler::responseFromGet CASE 1"); // < DEBUG
       try
       {
-        return responseFromLocationIndex(absolute_path, location);
+        return responseFromLocationIndex(absolute_path, request, *location);
       }
       catch(const Utils::Exceptions::FileDoesNotExist& e)
       {
         if (location->autoindex == "on")
-          return responseFromAutoIndex(absolute_path);
+          return responseFromAutoIndex(absolute_path, request);
 
         return createErrorResponse(Http::NotFound, request, server);
       }
@@ -295,6 +298,7 @@ namespace WS { namespace Core {
     return Http::Parser::serializeResponse(response);
   }
 
+
   std::string    RequestHandler::responseFromPost(const std::string& absolute_path,
                                                       const Http::Request& request, 
                                                       const Config::ServerConfig* server)
@@ -326,6 +330,7 @@ namespace WS { namespace Core {
     return Http::Parser::serializeResponse(response);
   }
 
+
   std::string    RequestHandler::responseFromDelete(const std::string& absolute_path,
                                                         const Http::Request& request, 
                                                         const Config::ServerConfig* server)
@@ -353,52 +358,61 @@ namespace WS { namespace Core {
     return Http::Parser::serializeResponse(response);
   }
 
+
+
   /// Index
+
   std::string    RequestHandler::responseFromLocationIndex(const std::string& absolute_path,
-                                                              const Config::ServerLocation* location)
+                                                            const Http::Request& request,
+                                                            const Config::ServerLocation& location)
   {
     Utils::Logger::debug("RequestHandler::responseFromLocationIndex"); // < DEBUG
 
     // Index file searching
     size_t i_file;
-    for (i_file = 0; i_file < location->index.size(); ++i_file)
+    for (i_file = 0; i_file < location.index.size(); ++i_file)
     {
-      if (Utils::File::fileExists((absolute_path + location->index[i_file]).c_str()))
+      if (Utils::File::fileExists((absolute_path + location.index[i_file]).c_str()))
         break;
     }
 
-    if (i_file == location->index.size()) //index file doesnt exist
+    if (i_file == location.index.size()) //index file doesnt exist
     {
-      if (location->autoindex == "on")
-        return responseFromAutoIndex(absolute_path);
+      if (location.autoindex == "on")
+        return responseFromAutoIndex(absolute_path, request);
       throw Utils::Exceptions::FileDoesNotExist();
     }
 
     // Response generating
     Http::Response response(Http::Ok);
 
-    response.body = Utils::File::readFile((absolute_path + location->index[i_file]).c_str());
+    response.body = Utils::File::readFile((absolute_path + location.index[i_file]).c_str());
 
     response.headers.insert(std::make_pair(
       "Content-Type",
-      RequestHandler::getContentType(location->index[i_file])
+      RequestHandler::getContentType(location.index[i_file])
     ));
 
     return Http::Parser::serializeResponse(response);
   }
 
-  std::string    RequestHandler::responseFromAutoIndex(std::string absolute_path)
+
+  std::string    RequestHandler::responseFromAutoIndex(const std::string& absolute_path, 
+                                                        const Http::Request& request)
   {
     Utils::Logger::debug("RequestHandler::responseFromAutoIndex"); // < DEBUG
     Http::Response  response(Http::Ok);
 
-    response.body = PageGenerator::generateIndexPage(absolute_path);
+    response.body = PageGenerator::generateIndexPage(absolute_path, request.uri);
     response.headers.insert(std::make_pair("Content-Type", "text/html"));
 
     return Http::Parser::serializeResponse(response);
   }
 
+
+
   /// Utils
+
   std::string RequestHandler::getAbsolutePath(const Http::Request& request,
                                               const Config::ServerLocation* location)
   {
@@ -422,6 +436,7 @@ namespace WS { namespace Core {
     return (Utils::File::getCurrentDir() + request.uri);
   }
 
+
   bool        RequestHandler::methodIsAllowed(const Http::Request& request, const Config::ServerLocation& location)
   {
     Utils::Logger::debug("RequestHandler::methodIsAllowed"); // < DEBUG
@@ -432,6 +447,7 @@ namespace WS { namespace Core {
     return (std::find(location.method.begin(), location.method.end(),
       Http::Parser::methodToString(request.method)) != location.method.end());
   }
+
 
   std::string RequestHandler::getContentType(const std::string& filename)
   {
@@ -454,5 +470,6 @@ namespace WS { namespace Core {
 
     return "text/plain";
   }
+
 
 }} //!namespace WS::Core
