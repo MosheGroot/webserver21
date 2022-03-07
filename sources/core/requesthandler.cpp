@@ -156,19 +156,17 @@ namespace WS { namespace Core {
     catch(...)
     {
     }
-    
 
     Http::Response  response(code);
 
     if (server && server->error_page.find(code) != server->error_page.end())
     {
-      // redirect to error page
-      // TODO
-      response.body = PageGenerator::generateErrorPage(response.status_code);
+      response.body = PageGenerator::generateErrorPage(
+        server->error_page.at(code).c_str());
     }
     else
     {
-      // default error page
+      // default error pages
       response.body = PageGenerator::generateErrorPage(response.status_code);
     }
 
