@@ -21,6 +21,16 @@ namespace WS { namespace Utils
     */
     static std::string  readFile(const char *filepath);
 
+    /* @brief Write or override (if flag `override` enabled) file `filepath`
+              with specified `data` content.
+
+      @param data       data to write
+      @param filepath   path to target file
+      @param override   append data to file or override entire file
+    */
+    static void         writeFile(const std::string& data, const char *filepath, bool override=true);
+
+
     /* @brief Create all directories given in `path`
               i.e. "tmp/a/b/c"
 

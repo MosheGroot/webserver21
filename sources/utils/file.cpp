@@ -39,6 +39,18 @@ namespace WS { namespace Utils
     return text;
   }
 
+  void  File::writeFile(const std::string& data, const char *filepath, bool override)
+  {
+    std::ofstream fout(filepath, (override ? std::ios_base::trunc : std::ios_base::app));
+
+    if (!fout.is_open())
+      throw std::runtime_error("writeFile exception: can't open file " + std::string(filepath));
+
+    fout << data << std::flush;
+
+    fout.close();
+  }
+
 
   void  File::createPath(const char* path, mode_t mode)
   {

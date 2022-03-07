@@ -230,8 +230,8 @@ namespace WS { namespace Core
       this->conf_);
 
     // send response
-    Utils::Logger::instance_.debug("SENDING RESPONSE"); // < DEBUG
-    Utils::Logger::instance_.debug(response);           // < DEBUG
+    Utils::Logger::instance_.debug("SENDING RESPONSE");         // < DEBUG
+    Utils::Logger::instance_.debug("{" + response + "}");       // < DEBUG
 
     sendMsg(socket_recv_from, response.c_str(), response.size());
 

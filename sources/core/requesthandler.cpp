@@ -136,10 +136,10 @@ namespace WS { namespace Core {
     if (request.method == Http::GET)
       response = responseFromGet(path, request, server, location);
     else if (request.method == Http::POST)
-      response = responseFromPost(path, request, server, location);
+      response = responseFromPost(path, request, server);
     else if (request.method == Http::DELETE)
       response = responseFromDelete(path, request, server, location);
-    
+
     return response;
   }
 
@@ -213,7 +213,7 @@ namespace WS { namespace Core {
     if (request.body.size() > static_cast<size_t>(::atoi(server->max_body_size.c_str())))
       return RequestHandler::createErrorResponse(Http::PayloadTooLarge, request, server);
 
-
+    /*
     /// Get script path
     std::string script_path;
 
@@ -231,13 +231,17 @@ namespace WS { namespace Core {
     /// Exec CGI
     std::string cgi_response = CGI::Handler::instance_.exec(script_path, request, *server);    
     Utils::Logger::info("{" + cgi_response + "}");
+    */
+    return RequestHandler::createErrorResponse(Http::BadRequest, request, server);
 
     /// Get response
     Http::Response  response;
     response.version = "HTTP/1.1";
     response.status_code = Http::Ok;
 
-    return Http::Parser::serializeResponse(response) + cgi_response;
+    (void)location;
+    return Http::Parser::serializeResponse(response);
+    // return Http::Parser::serializeResponse(response) + cgi_response;
   }
 
   /// Methods
@@ -309,8 +313,7 @@ namespace WS { namespace Core {
 
   std::string    RequestHandler::responseFromPost(const std::string& absolute_path,
                                                       const Http::Request& request, 
-                                                      const Config::ServerConfig* server,
-                                                      const Config::ServerLocation* location)
+                                                      const Config::ServerConfig* server)
   {
     Utils::Logger::debug("RequestHandler::responseFromPost"); // < DEBUG
 
@@ -318,9 +321,27 @@ namespace WS { namespace Core {
     if (request.body.size() > static_cast<size_t>(::atoi(server->max_body_size.c_str())))
       return RequestHandler::createErrorResponse(Http::PayloadTooLarge, request, server);
 
-    (void)absolute_path;
-    (void)location;
-    return createErrorResponse(Http::NotImplemented, request, server);
+    // check if path is a dir
+    if (Utils::File::isDir(absolute_path.c_str()))
+      return RequestHandler::createErrorResponse(Http::BadRequest, request, server);
+
+    // create response
+    Http::Response  response;
+
+    response.version = "HTTP/1.1";
+
+    if (Utils::File::fileExists(absolute_path.c_str()))
+    {
+      Utils::File::writeFile(request.body, absolute_path.c_str(), true);
+      response.status_code = Http::NoContent;
+    }
+    else
+    {
+      Utils::File::writeFile(request.body, absolute_path.c_str());
+      response.status_code = Http::Created;
+    }
+
+    return Http::Parser::serializeResponse(response);
   }
 
   std::string    RequestHandler::responseFromDelete(const std::string& absolute_path,

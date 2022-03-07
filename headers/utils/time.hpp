@@ -20,7 +20,7 @@ namespace WS { namespace Utils
 
       @return Timestamp in std::string container.
     */
-    static std::string getTimestamp(const char *format = "%Y-%m-%d %H:%M:%S");
+    static std::string getTimestamp(const char *format = "%Y-%m-%d %H:%M:%S", bool localtime=true);
 
   }; //!class File
 }} //!namespace WS::Utils

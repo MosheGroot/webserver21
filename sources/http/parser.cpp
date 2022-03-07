@@ -1,5 +1,6 @@
 #include "../../headers/http/parser/parser.hpp"
 #include "../../headers/utils/string.hpp"
+#include "../../headers/utils/time.hpp"
 #include "../../headers/utils/logger.hpp" // < debug
 
 namespace WS { namespace Http
@@ -83,7 +84,10 @@ namespace WS { namespace Http
     ss << data.version << ' '
       << Parser::statusToString(data.status_code) << "\r\n";
 
-    // headers
+    // date header
+    ss << "Date: " << Utils::Time::getTimestamp("%a, %d %b %Y %H:%M:%S GMT", false) << "\r\n";
+
+    // other headers
     {
       std::map<std::string, std::string>::const_iterator  iter;
       for (iter = data.headers.begin(); iter != data.headers.end(); ++iter)
@@ -96,10 +100,11 @@ namespace WS { namespace Http
       ss << "Content-Length: " << data.body.size() << "\r\n";
     }
 
+    ss << "\r\n"; // empty line (requires always)
+
     if (!data.body.empty())
     {
-      ss << "\r\n" // empty line between headers and body
-        << data.body;
+      ss << data.body;
     }
 
     /// Return

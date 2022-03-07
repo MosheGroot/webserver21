@@ -77,8 +77,7 @@ namespace WS { namespace Core
 
     static std::string      responseFromPost(const std::string& absolute_path,
                                               const Http::Request& request, 
-                                              const Config::ServerConfig* server,
-                                              const Config::ServerLocation* location);
+                                              const Config::ServerConfig* server);
 
     static std::string      responseFromDelete(const std::string& absolute_path,
                                                 const Http::Request& request, 
