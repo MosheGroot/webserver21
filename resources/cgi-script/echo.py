@@ -1,7 +1,6 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 import os
 import sys
-from urllib import response
 
 # echo
 if (os.environ['REQUEST_METHOD'] == 'POST'):    
@@ -18,8 +17,8 @@ response_body = """<html>
     </body>
 </html>""".format(data)
 
-print("Content-type: text/html", end='\r\n')
-print("Content-Lenght: {}".format(len(response_body) - 1), end='\r\n')
+print("Content-Type: text/html", end='\r\n')
+print("Content-Length: {}".format(len(response_body)), end='\r\n')
 print(end='\r\n')
 print(response_body, end='')
 

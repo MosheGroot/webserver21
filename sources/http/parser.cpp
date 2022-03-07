@@ -95,15 +95,18 @@ namespace WS { namespace Http
     }
 
     // body
-    if (Parser::needBodyForStatus(data.status_code))
+    if (ending)
     {
-      ss << "Content-Length: " << data.body.size() << "\r\n"
-        << "\r\n"
-        << data.body;
-    }
-    else
-    {
-      ss << "\r\n";
+      if (Parser::needBodyForStatus(data.status_code))
+      {
+        ss << "Content-Length: " << data.body.size() << "\r\n"
+          << "\r\n"
+          << data.body;
+      }
+      else
+      {
+        ss << "\r\n";
+      }
     }
 
     /// Return

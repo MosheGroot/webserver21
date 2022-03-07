@@ -206,7 +206,7 @@ namespace WS { namespace Core {
     if (request.body.size() > static_cast<size_t>(::atoi(server->max_body_size.c_str())))
       return RequestHandler::createErrorResponse(Http::PayloadTooLarge, request, server);
 
-    /*
+
     /// Get script path
     std::string script_path;
 
@@ -224,15 +224,11 @@ namespace WS { namespace Core {
     /// Exec CGI
     std::string cgi_response = CGI::Handler::instance_.exec(script_path, request, *server);    
     Utils::Logger::info("{" + cgi_response + "}");
-    */
-    return RequestHandler::createErrorResponse(Http::BadRequest, request, server);
 
     /// Get response
     Http::Response  response(Http::Ok);
 
-    (void)location;
-    return Http::Parser::serializeResponse(response);
-    // return Http::Parser::serializeResponse(response) + cgi_response;
+    return Http::Parser::serializeResponse(response, false) + cgi_response;
   }
 
   /// Methods
