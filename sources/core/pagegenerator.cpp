@@ -11,17 +11,25 @@
 namespace WS { namespace Core {
 
   // Traits
-  const char * const PageGenerator::error_page_path_    = "resources/default_pages/error.html";
-  const char * const PageGenerator::default_page_path_  = "resources/default_pages/default_index.html";
+  const std::string PageGenerator::error_pages_dir_    = "resources/default_pages/errors/";
+  const std::string PageGenerator::default_page_path_  = "resources/default_pages/default_index.html";
 
   // Generators
+  std::string   PageGenerator::generateErrorPage(Http::StatusCode status_code)
+  {
+    Utils::Logger::debug("PageGenerator::generateErrorPage"); // < DEBUG
+
+    return Utils::File::readFile((
+      PageGenerator::error_pages_dir_
+      + Utils::String::to_string(static_cast<int>(status_code))
+      + ".html").c_str());
+  }
+
   std::string   PageGenerator::generateErrorPage(const char *error_page_path)
   {
     Utils::Logger::debug("PageGenerator::generateErrorPage"); // < DEBUG
-    std::string page = Utils::File::readFile(
-      (error_page_path) ? error_page_path : PageGenerator::error_page_path_);
 
-    return page;
+    return Utils::File::readFile(error_page_path);
   }
 
   
@@ -29,7 +37,7 @@ namespace WS { namespace Core {
   {
     Utils::Logger::debug("PageGenerator::generateDefaultPage"); // < DEBUG
     
-    return Utils::File::readFile(PageGenerator::default_page_path_);
+    return Utils::File::readFile(PageGenerator::default_page_path_.c_str());
   }
 
 

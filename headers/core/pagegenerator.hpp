@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "../http/http.hpp"
 
 namespace WS { namespace Core {
 
@@ -9,14 +10,18 @@ namespace WS { namespace Core {
   private:
     PageGenerator() {} //deleted
 
-    static const char * const error_page_path_;
-    static const char * const default_page_path_;
+    static const std::string  error_pages_dir_;
+    static const std::string  default_page_path_;
 
 
   public:
-    /* @brief Generate error page with specified error code
+    /* @brief Generate default error page with specified error code
     */
-    static std::string  generateErrorPage(const char *error_page_path=NULL);
+    static std::string  generateErrorPage(Http::StatusCode status_code);
+
+    /* @brief Generate error page with custom html file
+    */
+    static std::string  generateErrorPage(const char *error_page_path);
 
 
     /* @brief Generate default page

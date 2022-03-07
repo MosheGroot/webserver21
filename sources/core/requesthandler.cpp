@@ -164,12 +164,12 @@ namespace WS { namespace Core {
     {
       // redirect to error page
       // TODO
-      response.body = PageGenerator::generateErrorPage();
+      response.body = PageGenerator::generateErrorPage(response.status_code);
     }
     else
     {
       // default error page
-      response.body = PageGenerator::generateErrorPage();
+      response.body = PageGenerator::generateErrorPage(response.status_code);
     }
 
     return Http::Parser::serializeResponse(response);

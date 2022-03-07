@@ -141,7 +141,6 @@ namespace WS { namespace Http
      Utils::Logger::debug("Http::Parser::statusToString"); // < DEBUG
     
     if (status_code == Continue)            return "100 Continue";
-    if (status_code == Continue)            return "100 Continue";
     if (status_code == Processing)          return "102 Processing";
     if (status_code == Ok)                  return "200 OK";
     if (status_code == Created)             return "201 Created";
