@@ -5,6 +5,7 @@
 bin/**
 logs
 .objects
+user_files/**
 
 # Executable
 webserv

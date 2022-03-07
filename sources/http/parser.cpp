@@ -95,16 +95,15 @@ namespace WS { namespace Http
     }
 
     // body
-    if (!data.body.empty())
+    if (Parser::needBodyForStatus(data.status_code))
     {
-      ss << "Content-Length: " << data.body.size() << "\r\n";
+      ss << "Content-Length: " << data.body.size() << "\r\n"
+        << "\r\n"
+        << data.body;
     }
-
-    ss << "\r\n"; // empty line (requires always)
-
-    if (!data.body.empty())
+    else
     {
-      ss << data.body;
+      ss << "\r\n";
     }
 
     /// Return
@@ -151,6 +150,7 @@ namespace WS { namespace Http
     if (status_code == NotFound)            return "404 Not Found";
     if (status_code == MethodNotAllowed)    return "405 Method Not Allowed";
     if (status_code == RequestTimeout)      return "408 Request Timeout";
+    if (status_code == Conflict)            return "409 Conflict";
     if (status_code == LengthRequired)      return "411 Length Required";
     if (status_code == PayloadTooLarge)     return "413 Payload Too Large";
     if (status_code == InternalServerError) return "500 Internal Server Error";
@@ -158,5 +158,15 @@ namespace WS { namespace Http
     
     throw std::invalid_argument("unsupported status code");
   }
+
+  bool         Parser::needBodyForStatus(StatusCode status_code)
+  {
+    // 1xx, 204, and 304 -- NO BODY
+    // all other: body or 'Content-Lenght: 0' if no body provided
+    return !((status_code > 100 && status_code < 200) // 1xx
+      || status_code == 204
+      || status_code == 304);
+  }
+
 
 }} //!namespace WS::Http

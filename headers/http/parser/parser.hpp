@@ -38,6 +38,7 @@ namespace WS { namespace Http
     static std::string  methodToString(Method method);
     static std::string  statusToString(StatusCode status_code);
 
+    static bool         needBodyForStatus(StatusCode status_code);
 
   }; //!class Parser
 }} //!namespace WS::Http

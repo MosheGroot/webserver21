@@ -138,7 +138,7 @@ namespace WS { namespace Core {
     else if (request.method == Http::POST)
       response = responseFromPost(path, request, server);
     else if (request.method == Http::DELETE)
-      response = responseFromDelete(path, request, server, location);
+      response = responseFromDelete(path, request, server);
 
     return response;
   }
@@ -346,38 +346,29 @@ namespace WS { namespace Core {
 
   std::string    RequestHandler::responseFromDelete(const std::string& absolute_path,
                                                         const Http::Request& request, 
-                                                        const Config::ServerConfig* server,
-                                                        const Config::ServerLocation* location)
+                                                        const Config::ServerConfig* server)
   {
     Utils::Logger::debug("RequestHandler::responseFromDelete"); // < DEBUG
-    (void)absolute_path;
-    (void)request;
-    (void)server;
-    (void)location;
+
+    if (!Utils::File::fileExists(absolute_path.c_str()))
+      return RequestHandler::createErrorResponse(Http::NotFound, request, server);
+    if (Utils::File::isDir(absolute_path.c_str()))
+      return RequestHandler::createErrorResponse(Http::Conflict, request, server);
 
     Http::Response response;
 
     response.version = "HTTP/1.1";
 
-    if (!Utils::File::isDir(absolute_path.c_str()))
-    {
-      std::string data = Utils::File::readFile(absolute_path.c_str());
-      ::remove(absolute_path.c_str());
+    std::string data = Utils::File::readFile(absolute_path.c_str());
+    ::remove(absolute_path.c_str());
 
-      response.status_code = Http::Ok;
-      response.body = data;
+    response.status_code = Http::Ok;
+    response.body = data;
 
-      response.headers.insert(std::make_pair(
-        "Content-Type",
-        RequestHandler::getContentType(absolute_path)
-      ));
-    }
-    else
-    {
-      ::rmdir(absolute_path.c_str());
-
-      response.status_code = Http::NoContent;
-    }
+    response.headers.insert(std::make_pair(
+      "Content-Type",
+      RequestHandler::getContentType(absolute_path)
+    ));
 
     return Http::Parser::serializeResponse(response);
   }

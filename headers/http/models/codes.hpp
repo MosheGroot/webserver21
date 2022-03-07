@@ -16,6 +16,7 @@ namespace WS { namespace Http {
     NotFound = 404,
     MethodNotAllowed = 405,
     RequestTimeout = 408,
+    Conflict = 409,
     LengthRequired = 411,
     PayloadTooLarge = 413,
     InternalServerError = 500,
