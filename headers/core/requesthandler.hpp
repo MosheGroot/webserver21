@@ -5,6 +5,10 @@
 #include "../config/models/location.hpp"
 #include "../config/models/config.hpp"
 
+
+#define CONNECTION_CLOSE    "DISCONNECT"
+
+
 namespace WS { namespace Core
 {
   /* @brief Handler for client's requests

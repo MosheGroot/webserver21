@@ -30,6 +30,12 @@ namespace WS { namespace Core {
     {
       request = Http::Parser::deserializeRequest(raw_request);
 
+      if (request.headers.find("Connection") != request.headers.end())
+      {
+        if (request.headers.at("Connection") == "close")
+          return CONNECTION_CLOSE;
+      }
+
       if (conf.server_list.size() == 0)
       {
         // imposible
