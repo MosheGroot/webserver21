@@ -54,6 +54,11 @@ namespace WS { namespace Core {
           response = RequestHandler::createResponse(request, server, location);
       }
     }
+    catch(const std::invalid_argument& e)
+    {
+      Utils::Logger::error(e.what());
+      response = RequestHandler::createErrorResponse(Http::BadRequest, request, server);
+    }
     catch(const std::exception& e)
     {
       Utils::Logger::error(e.what());
