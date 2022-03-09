@@ -63,14 +63,14 @@ server
     server_name   <name1> <name2> <name3>
     max_body_size <number in bytes>
     location <uri>
-      root      <...>
-      index     <...>
-      cgi       <...>
-      redirect  <...>
-      method    <m1> <m2> <m3>
-      autoindex <on/off>
-   location <uri>
-      ...
+        root      <...>
+        index     <...>
+        cgi       <...>
+        redirect  <...>
+        method    <m1> <m2> <m3>
+        autoindex <on/off>
+    location <uri>
+        ...
 ```
 
 ### Build and run
