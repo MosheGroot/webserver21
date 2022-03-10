@@ -44,15 +44,19 @@ Language: `C++98`
 * Execution of simple CGI bash scripts or binaries
 * Simple thread-unsafety logger to console and file
 
+### Runtime
+
+https://user-images.githubusercontent.com/44144647/157638273-f731b1a1-6515-4f27-a8d6-536540f81058.mp4
+
+
+
+
 ## Contributors
 
 
 | <img src="https://avatars.githubusercontent.com/u/44144647?v=4" width="25px"> [PP189B][PP189B_profile]  | <img src="https://avatars.githubusercontent.com/u/53272893?v=4" width="25px"> [Ulians-S][Uliana-S_profile]  | <img src="https://avatars.githubusercontent.com/u/77484081?v=4" width="25px"> [AliceFromWardenfell][AliceFromWardenfell_profile] |
 |---------------------------------------|------------------------------------------|---------------------------------------------------------------|
 | HTTP + requests processing + default pages    | Config + CGI + [Kvast website](https://github.com/Uliana-S/kvast_htmlacademy)     | Client-server connections, multiplexing and etc.              |
-
-
-
 
 ## Testing
 
@@ -68,6 +72,7 @@ Language: `C++98`
 ![image](https://user-images.githubusercontent.com/44144647/157630648-2fc203ae-2b3e-4b3f-a52a-274df46ec3e4.png)
 
 ###### (P.S. you need to configure domains in `hosts` file of your system for testing)
+
 
 ### Configurating
 
