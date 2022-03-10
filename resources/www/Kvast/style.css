@@ -1,22 +1,22 @@
 body {
-    min-width: 1040px;
-    margin: 0;
-    padding: 0;
-    font-family: "Arial", sans-serif;
-    font-size: 16px;
-    line-height: 30px;
-    color: black;
-    background-color: white;
+	min-width: 1040px;
+	margin: 0;
+	padding: 0;
+	font-family: "Arial", sans-serif;
+	font-size: 16px;
+	line-height: 30px;
+	color: black;
+	background-color: white;
 }
 
 .container1 {
-    width: 800px;
-    margin: 0 auto;
+	width: 800px;
+	margin: 0 auto;
 }
 
 .container2 {
-    width: 1015px;
-    margin: 0 auto;
+	width: 1015px;
+	margin: 0 auto;
 }
 
 .clearfix::after {
@@ -25,10 +25,13 @@ body {
 	clear: both;
 }
 
+
+/* ==== HEADER ==== */
+
 .page-header {
 	min-height: 490px;
 	padding-top: 60px;
-    background: url(img/wheat-back.jpg) no-repeat;
+	background: url(img/wheat-back.jpg) no-repeat;
 	background-position: bottom;
 	background-size: cover;
 }
@@ -102,7 +105,7 @@ body {
 }
 
 
-
+/* ==== NOVELTIES ==== */
 
 .new {
 	margin: 0;
@@ -124,12 +127,6 @@ body {
 	text-transform: uppercase;
 }
 
-.new-good {
-	margin: 0;
-	padding: 0;
-	width: 398px;
-}
-
 .new h2 {
 	margin: 0;
 	padding: 0;
@@ -147,11 +144,22 @@ body {
 	padding-bottom: 20px;
 }
 
+.new-good {
+	margin: 0;
+	padding: 0;
+	width: 398px;
+	float: left;
+	border-right: 1px solid rgb(229,229,229);
+}
+
+.new-good:nth-child(2) {
+	border-left: 1px solid rgb(229,229,229);
+}
+
 .info {
-	display: block;
 	position: absolute;
 	width: 150px;
-    margin-left: 150px;
+	margin-left: 220px;
 }
 
 .info p {
@@ -161,30 +169,24 @@ body {
 	margin-top: 10px;
 }
 
-.bottle-left .info {
-	left: 464px;
-}
-
-.bottle-right .info {
-	left: 864px;
-}
-
 .new-good table {
 	border-collapse: collapse;
 	box-sizing: border-box;
-	width: 100%;
+	width: 150px;
 	height: 44px;
-	padding: 0;
-	margin: 0;
 }
 
 .new-good td {
-	margin: 0;
 	border: 1px solid rgb(229,229,229);
 	padding: 5px 5px 5px 10px;
 	font-weight: bold;
 	text-align: left;
 	text-transform: uppercase;
+}
+
+.new-good img {
+	top: 5px;
+	margin-left: 44px;
 }
 
 .description p{
@@ -193,37 +195,6 @@ body {
 	padding: 0;
 	margin-bottom: 60px;
 	padding-left: 34px;
-
-} 
-
-.bottle-left {
-	margin: 0;
-	padding: 0;
-	float: left;
-	border-left:  1px solid rgb(229,229,229);
-	border-right: 1px solid rgb(229,229,229);
-}
-
-.bottle-right {
-	margin: 0;
-	padding: 0;
-	float: left;
-	margin-right: 1px;
-	border-right: 1px solid rgb(229,229,229);
-}
-
-.new-good .beer1 {
-	margin: 0;
-	padding: 0;
-	padding-top: 5px;
-	margin-left: 44px;
-}
-
-.new-good .beer2 {
-	margin: 0;
-	padding: 0;
-	padding-top: 5px;
-	margin-left: 44px;
 }
  
 .btn {
@@ -239,45 +210,45 @@ body {
 	text-decoration: none;
 	word-wrap: break-word;
 	border: 2px solid rgb(131,71,0);
- }
+}
  
- .btn-details {
+.btn-details {
 	float: left;
 	clear: left;
 	width: 126px;
 	color: rgb(131,71,0);
 	background-color: white;
 	margin-left: 34px;
- }
+}
 
- .btn-details:hover {
-	 border-color: rgb(106, 19, 0);
-	 color: rgb(106, 19, 0);
- }
+.btn-details:hover {
+	border-color: rgb(106, 19, 0);
+	color: rgb(106, 19, 0);
+}
 
-  .btn-details:active {
-	 border-color: rgb(210, 195, 178);
-	 color: rgb(210, 209, 202);
- }
+.btn-details:active {
+	border-color: rgb(210, 195, 178);
+	color: rgb(210, 209, 202);
+}
 
- .btn-buy {
+.btn-buy {
 	float: left;
 	width: 89px;
 	color: white;
 	background-color: rgb(131,71,0);
 	margin-left: 7px;
- }
+}
 
- .btn-buy:hover {
-	 background-color: rgb(106, 45, 0);
- }
+.btn-buy:hover {
+	background-color: rgb(106, 45, 0);
+}
 
- .btn-buy:active{
-	 background-color: rgb(106, 45, 0);
-	 color: rgb(160, 136, 116);
- }
+.btn-buy:active{
+	background-color: rgb(106, 45, 0);
+	color: rgb(160, 136, 116);
+}
 
- .price {
+.price {
 	margin: 0;
 	display: inline-block;
 	height: 100%;
@@ -285,70 +256,69 @@ body {
 	margin-left: 15px;
 	vertical-align: top;
 	text-align: center;
- }
+}
+  
  
+/* ==== ADVANTAGE ==== */
  
- 
-
- 
- .advantage {
+.advantage {
 	background-color: rgb(255, 203, 120);
 	padding-top: 80px;
 	padding-bottom: 90px;
- }
+}
  
- .advantage ul {
+.advantage ul {
 	margin: 0;
 	padding: 0;
 	list-style: none;
- }
+}
  
- .advantage-item{
+.advantage-item{
 	position: relative;
 	text-align: left;
 	padding: 0;
 	margin: 0;
 	float: left;
- }
+}
  
- .advantage-item:first-child{
+.advantage-item:first-child{
 	padding-right: 90px;
 	width: 215px;
- }
+}
 
- .advantage-item:nth-child(2) {
+.advantage-item:nth-child(2) {
 	padding-right: 50px;
 	padding-left: 95px;
 	width: 255px;
 	border-left: 1px solid rgb(229,182,108);
- } 
+}
  
-  .advantage-item:last-child{
+.advantage-item:last-child{
 	padding-left: 95px;
 	width: 210px;
 	border-left: 1px solid rgb(229,182,108);
  }
  
- .advantage-item::before {
+.advantage-item::before {
 	content: '';
 	position: absolute;
 	width: 65px;
 	height: 70px;
 	background-image: url('img/spritesheet.png');
 	background-repeat: no-repeat;
- }
+}
  
- .feature1::before {
+.feature1::before {
 	background-position: -147px -40px;
- }
+}
  
-  .feature2::before {
+.feature2::before {
 	background-position: -459px -40px;
- }
+}
  
-  .feature3::before {
+.feature3::before {
 	background-position: -585px -40px;
- }
+}
  
 .advantage-item h2 {
 	padding: 0;
@@ -367,7 +337,7 @@ body {
 }
 
 
-
+/* ==== HISTORY ==== */
 
 .history {
 	margin: 0;
@@ -377,7 +347,7 @@ body {
 }
 
 .history h2 {
-    text-transform: uppercase;
+	text-transform: uppercase;
 	font-size: 40px;
 	padding: 0;
 	margin: 0;
@@ -386,9 +356,9 @@ body {
 }
 
 .history dt {
-    text-transform: uppercase;
-    font-size:  20px;
-    font-weight: bold;
+	text-transform: uppercase;
+	font-size:  20px;
+	font-weight: bold;
 	padding: 0;
 	margin: 0;
 	margin-top: 60px;
@@ -397,16 +367,16 @@ body {
 .history i {
 	padding: 0;
 	margin: 0;
-    float: right;
-    font-size:  16px;
-    font-style: italic;
-    font-weight: normal;
-    text-transform: capitalize;
+	float: right;
+	font-size:  16px;
+	font-style: italic;
+	font-weight: normal;
+	text-transform: capitalize;
 }
 
 .history a {
-    color: rgb(131,71,0);
-    text-transform: lowercase;
+	color: rgb(131,71,0);
+	text-transform: lowercase;
 }
 
 .history a:hover{
@@ -436,6 +406,7 @@ body {
 }
 
 
+/* ==== PRESS ==== */
 
 .press {
 	margin: 0;
@@ -456,6 +427,7 @@ body {
 }
 
 .press blockquote {
+	position: relative;
 	padding: 0;
 	margin: 0;
 	margin-top: 75px;
@@ -472,7 +444,7 @@ body {
 	content: '';
 	position: absolute;
 	margin-top: 5px;
-	left: 135px;
+	left: -105px;
 	width: 45px;
 	height: 35px;
 	background-image: url('img/spritesheet.png');
@@ -512,20 +484,20 @@ body {
 }
 
 
-
+/* ==== PRICE ==== */
 
 .price-table {
-    padding: 0;
-    margin: 0;
+	padding: 0;
+	margin: 0;
 	margin-bottom: 90px;
 }
 
 .price-table h2 {
-    padding: 0;
-    margin: 0;
-    font-weight: bold;
-    font-size: 40px;
-    margin-top: 90px;
+	padding: 0;
+	margin: 0;
+	font-weight: bold;
+	font-size: 40px;
+	margin-top: 90px;
 	padding-top: 15px;
 	padding-bottom: 15px;
 	margin-bottom: 75px;
@@ -599,8 +571,7 @@ body {
 }
 
 
-
-
+/* ==== FEEDBACK ==== */
 
 .order {
 	margin: 0;
@@ -706,12 +677,12 @@ body {
 }
 
 .feedback-form textarea {
-  	display: block;
-  	min-height: 120px;
+	display: block;
+	min-height: 120px;
 }
 
 
-
+/* ==== FOOTER ==== */
 
 .page-footer {
 	padding: 60px 0 70px;
