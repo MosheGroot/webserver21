@@ -6,7 +6,8 @@
 
 Write own implementation of web server like nginx one with next capabilities:
   * custom configs
-  * multiple servers handling
+  * multiple servers handling at one or different `ip:port` pairs
+  * multiple client-server connections
   * simple CGI
   * multiple routes in server, error pages, redirects and max client body size paramets
   * `GET`, `POST` and `DELETE` methods with `HTTP/1.1` version of requests
@@ -32,6 +33,8 @@ Language: `C++98`
     + uri
     + root
     + index
+    + autoindex
+    + allowed methods
     + cgi
     + redirect
 * Multiple servers at one or different ip:port socket
@@ -46,12 +49,25 @@ Language: `C++98`
 
 | <img src="https://avatars.githubusercontent.com/u/44144647?v=4" width="25px"> [PP189B][PP189B_profile]  | <img src="https://avatars.githubusercontent.com/u/53272893?v=4" width="25px"> [Ulians-S][Uliana-S_profile]  | <img src="https://avatars.githubusercontent.com/u/77484081?v=4" width="25px"> [AliceFromWardenfell][AliceFromWardenfell_profile] |
 |---------------------------------------|------------------------------------------|---------------------------------------------------------------|
-| HTTP + requests processing + default pages    | Config + CGI + Kvast website             | Client-server connections, multiplexing and etc.              |
+| HTTP + requests processing + default pages    | Config + CGI + [Kvast website](https://github.com/Uliana-S/kvast_htmlacademy)     | Client-server connections, multiplexing and etc.              |
 
 
 
 
 ## Testing
+
+### Current configuration
+
+* [Kvast website](https://github.com/Uliana-S/kvast_htmlacademy) at `http://kvast.webserv.local`
+![image](https://user-images.githubusercontent.com/44144647/157631309-1955e75e-6820-4dcc-b2c4-3b0b54b4a013.png)
+
+* Test website at `webserv.local:8888`
+![image](https://user-images.githubusercontent.com/44144647/157630839-35b3fb01-0b3f-4a89-9284-80afc16c1333.png)
+
+* Default website at `default.webserv.local:8888`
+![image](https://user-images.githubusercontent.com/44144647/157630648-2fc203ae-2b3e-4b3f-a52a-274df46ec3e4.png)
+
+###### (P.S. you need to configure domains in `hosts` file of your system for testing)
 
 ### Configurating
 
