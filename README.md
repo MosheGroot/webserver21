@@ -54,7 +54,7 @@ https://user-images.githubusercontent.com/44144647/157638273-f731b1a1-6515-4f27-
 ## Contributors
 
 
-| <img src="https://avatars.githubusercontent.com/u/44144647?v=4" width="25px"> [PP189B][PP189B_profile]  | <img src="https://avatars.githubusercontent.com/u/53272893?v=4" width="25px"> [Ulians-S][Uliana-S_profile]  | <img src="https://avatars.githubusercontent.com/u/77484081?v=4" width="25px"> [AliceFromWardenfell][AliceFromWardenfell_profile] |
+| <img src="https://avatars.githubusercontent.com/u/44144647?v=4" width="25px"> [PP189B][PP189B_profile]  | <img src="https://avatars.githubusercontent.com/u/53272893?v=4" width="25px"> [Ulians-So][Uliana-So_profile]  | <img src="https://avatars.githubusercontent.com/u/77484081?v=4" width="25px"> [AliceFromWardenfell][AliceFromWardenfell_profile] |
 |---------------------------------------|------------------------------------------|---------------------------------------------------------------|
 | HTTP + requests processing + default pages    | Config + CGI + [Kvast website](https://github.com/Uliana-S/kvast_htmlacademy)     | Client-server connections, multiplexing and etc.              |
 
@@ -104,5 +104,5 @@ make
 
 
 [PP189B_profile]: https://github.com/PP189B
-[Uliana-S_profile]: https://github.com/Uliana-S
+[Uliana-So_profile]: https://github.com/Uliana-So
 [AliceFromWardenfell_profile]: https://github.com/AliceFromWardenfell
